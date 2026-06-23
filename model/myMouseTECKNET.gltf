@@ -60,14 +60,14 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":4499880,
+			"count":2249940,
 			"max":[
-				0.31064698100090027,
+				0.31064748764038086,
 				0.601869523525238,
 				0
 			],
 			"min":[
-				-0.31244903802871704,
+				-0.3124483823776245,
 				-0.5843156576156616,
 				-0.265911728143692
 			],
@@ -76,51 +76,51 @@
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":4499880,
+			"count":2249940,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":4499880,
+			"count":2249940,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
 			"componentType":5125,
-			"count":4499880,
+			"count":2249940,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":53998560,
+			"byteLength":26999280,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":53998560,
-			"byteOffset":53998560,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":35999040,
-			"byteOffset":107997120,
+			"byteLength":26999280,
+			"byteOffset":26999280,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":17999520,
-			"byteOffset":143996160,
+			"byteOffset":53998560,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":8999760,
+			"byteOffset":71998080,
 			"target":34963
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":161995680,
+			"byteLength":80997840,
 			"uri":"myMouseTECKNET.bin"
 		}
 	]
