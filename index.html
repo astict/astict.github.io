@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Thomas Astic — Développeur Web</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1: #1a2035;
+    --bg-2: #2a3552;
+    --bg-3: #0e1525;
+    --accent: #6ea8ff;
+    --green: #5fe28a;
+    --text: #e8ecf3;
+    --text-dim: #8b93a7;
+    --line: rgba(255,255,255,0.10);
+    --line-soft: rgba(255,255,255,0.06);
+    --panel: rgba(255,255,255,0.05);
+    --panel-strong: rgba(255,255,255,0.09);
+  }
+  [data-theme="light"]{
+    --bg-1: #d4dae8;
+    --bg-2: #bec8dc;
+    --bg-3: #c0c8d8;
+    --text: #12141a;
+    --text-dim: #5b6275;
+    --line: rgba(10,12,20,0.12);
+    --line-soft: rgba(10,12,20,0.07);
+    --panel: rgba(10,12,20,0.04);
+    --panel-strong: rgba(10,12,20,0.07);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body {
+    width:100%; height:100%;
+    overflow:hidden;
+    font-family: "JetBrains Mono", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text);
+    transition: color .4s ease;
+  }
+  /* Fond bleu-gris avec halo central lumineux — comme la référence */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 42%,
+        rgba(80,110,170,0.55) 0%,
+        rgba(35,55,95,0.45) 35%,
+        rgba(15,22,42,0.0) 70%),
+      radial-gradient(ellipse 120% 120% at 50% 50%,
+        var(--bg-2) 0%,
+        var(--bg-1) 45%,
+        var(--bg-3) 100%);
+    transition: background .5s ease;
+    z-index:-1;
+  }
+  #app { position:relative; width:100vw; height:100vh; }
+  canvas { display:block; width:100%; height:100%; }
+
+  button { font-family:inherit; cursor:pointer; }
+
+  /* ===================== HEADER ===================== */
+  #header{
+    position:fixed; top:0; left:0; right:0;
+    display:flex; align-items:flex-start; justify-content:space-between;
+    padding: 26px 32px;
+    z-index:5;
+    pointer-events:none;
+    transform: translate(calc(var(--px,0) * -3px), calc(var(--py,0) * -2px));
+  }
+  #header > * { pointer-events:auto; }
+
+  .brand .name{ font-size:14px; font-weight:700; letter-spacing:1.5px; }
+  .brand .role{
+    font-size:11px; color:var(--text-dim); margin-top:3px;
+    letter-spacing:1px; display:flex; align-items:center; gap:6px;
+  }
+  .dot{ width:5px; height:5px; border-radius:50%; background:var(--green); display:inline-block; }
+  .dot.pulse{ box-shadow:0 0 0 0 rgba(95,226,138,0.6); animation:pulse 2.2s infinite; }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(95,226,138,0.5); }
+    70%{ box-shadow:0 0 0 6px rgba(95,226,138,0); }
+    100%{ box-shadow:0 0 0 0 rgba(95,226,138,0); }
+  }
+
+  .navwrap{ display:flex; align-items:center; gap:10px; }
+  .navpill{
+    display:flex; align-items:center; gap:2px;
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:999px; padding:6px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .navpill .icobtn{
+    width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--panel-strong); border:none; color:var(--accent);
+  }
+  .navitem{
+    border:none; background:transparent; color:var(--text);
+    padding:6px 16px; border-radius:999px; text-align:left;
+    transition: background .2s ease, color .2s ease;
+  }
+  .navitem .lbl{ font-size:11px; font-weight:600; letter-spacing:1px; display:block; }
+  .navitem .num{ font-size:10px; color:var(--text-dim); display:block; margin-top:1px; }
+  .navitem:hover{ background:var(--panel-strong); }
+  .navitem:hover .num{ color:var(--accent); }
+
+  .miscpill{
+    display:flex; align-items:center; gap:8px;
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:999px; padding:6px 12px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .miscpill .bar{ width:12px; height:2px; background:var(--text-dim); border-radius:2px; }
+
+  .statuspill{
+    display:flex; align-items:center; gap:8px;
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:999px; padding:9px 16px;
+    font-size:11px; font-weight:600; letter-spacing:1.5px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* ===================== SIDE RAILS ===================== */
+  .rail{
+    position:fixed; top:50%; transform: translateY(-50%);
+    width:1px; height:300px;
+    z-index:4; pointer-events:none;
+  }
+  .rail.left{ left:30px; transform: translateY(-50%) translateX(calc(var(--px,0) * -6px)); }
+  .rail.right{ right:30px; transform: translateY(-50%) translateX(calc(var(--px,0) * 6px)); }
+  .rail .line{
+    position:absolute; left:0; top:0; bottom:0; width:1px;
+    background-image: linear-gradient(var(--line) 50%, transparent 50%);
+    background-size: 1px 8px;
+  }
+  .rail .node{
+    position:absolute; left:-3px; width:7px; height:7px;
+    border-radius:50%; border:1px solid var(--line); background:var(--bg-1);
+  }
+  .rail .node.top{ top:-4px; }
+  .rail .node.bottom{ bottom:-4px; }
+  .ticks{
+    position:absolute; top:80px; display:flex; flex-direction:column; gap:7px;
+  }
+  .rail.left .ticks{ right:10px; align-items:flex-end; }
+  .rail.right .ticks{ left:10px; align-items:flex-start; }
+  .ticks span{ display:block; height:1px; background:var(--line); }
+  .rail.left .ticks span:nth-child(1){ width:46px; }
+  .rail.left .ticks span:nth-child(2){ width:30px; }
+  .rail.left .ticks span:nth-child(3){ width:38px; background:var(--accent); opacity:.7;}
+  .rail.left .ticks span:nth-child(4){ width:18px; }
+  .rail.right .ticks span:nth-child(1){ width:46px; }
+  .rail.right .ticks span:nth-child(2){ width:30px; }
+  .rail.right .ticks span:nth-child(3){ width:38px; background:var(--accent); opacity:.7;}
+  .rail.right .ticks span:nth-child(4){ width:18px; }
+
+  /* ===================== DOCK ===================== */
+  #dock{
+    position:fixed; bottom:24px; left:50%;
+    transform: translateX(-50%) translateX(calc(var(--px,0) * 4px)) translateY(calc(var(--py,0) * 3px));
+    display:flex; gap:8px; z-index:5;
+    flex-wrap:wrap; justify-content:center;
+    max-width:90vw;
+  }
+  .dockitem{
+    display:flex; align-items:center; gap:7px;
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:999px; padding:9px 14px;
+    font-size:10.5px; font-weight:600; letter-spacing:0.8px; color:var(--text);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: background .2s ease, transform .2s ease, border-color .2s ease;
+  }
+  .dockitem svg{ width:13px; height:13px; opacity:.85; flex-shrink:0; }
+  .dockitem:hover{ background:var(--panel-strong); border-color:var(--accent); transform: translateY(-2px); }
+
+  /* ===================== FOOTER CORNERS ===================== */
+  #clock{
+    position:fixed; bottom:26px; left:32px; z-index:5;
+    display:flex; align-items:center; gap:8px;
+    font-size:11px; color:var(--text-dim); letter-spacing:1px;
+    pointer-events:none;
+  }
+  #cornerTools{
+    position:fixed; bottom:22px; right:28px; z-index:5;
+    display:flex; gap:8px;
+  }
+  .circlebtn{
+    width:32px; height:32px; border-radius:50%;
+    background:var(--panel); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text); backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: background .2s ease, color .2s ease;
+  }
+  .circlebtn:hover{ background:var(--panel-strong); color:var(--accent); }
+  .circlebtn svg{ width:14px; height:14px; }
+
+  /* ===================== HINT ===================== */
+  #hint{
+    position:absolute; bottom:78px; left:50%;
+    transform: translateX(-50%);
+    font-size:11px; color:var(--text-dim);
+    letter-spacing:0.6px;
+    pointer-events:none; user-select:none;
+    opacity:0; transition: opacity 1s ease;
+    z-index:4;
+  }
+  #hint.show{ opacity:1; }
+
+  /* ===================== LOADER ===================== */
+  #loader{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    z-index:10;
+    transition: opacity .6s ease;
+  }
+  #loader::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 42%,
+        rgba(80,110,170,0.55) 0%,
+        rgba(35,55,95,0.45) 35%,
+        rgba(15,22,42,0.0) 70%),
+      radial-gradient(ellipse 120% 120% at 50% 50%,
+        var(--bg-2) 0%,
+        var(--bg-1) 45%,
+        var(--bg-3) 100%);
+    z-index:-1;
+  }
+  #loader.hide{ opacity:0; pointer-events:none; }
+  #loader .bar-track{
+    width:220px; height:2px; background: var(--line);
+    border-radius:2px; overflow:hidden; margin-top:18px;
+  }
+  #loader .bar-fill{ width:0%; height:100%; background: var(--accent); transition: width .2s ease; }
+  #loader .label{ font-size:11px; color:var(--text-dim); letter-spacing:1.5px; }
+  #loader .error{
+    margin-top:14px; font-size:11px; color:#ff8a8a;
+    max-width:340px; text-align:center; line-height:1.6; display:none;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .dot.pulse{ animation:none; }
+  }
+
+  @media (max-width: 760px){
+    .navwrap .navitem .num{ display:none; }
+    #dock{ gap:6px; }
+    .dockitem{ padding:7px 10px; font-size:9.5px; }
+    .dockitem svg{ display:none; }
+    .rail{ display:none; }
+  }
+</style>
+</head>
+<body>
+  <div id="app">
+
+    <header id="header">
+      <div class="brand">
+        <div class="name">THOMAS ASTIC</div>
+        <div class="role" id="roleLabel"><span>DÉVELOPPEUR WEB</span><span class="dot"></span></div>
+      </div>
+
+      <div class="navwrap">
+        <nav class="navpill" id="navPill">
+          <button class="icobtn" title="Accueil">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L14.5 9.5 22 12 14.5 14.5 12 22 9.5 14.5 2 12 9.5 9.5 Z"/></svg>
+          </button>
+          <button class="navitem" data-fr="PROJETS" data-en="PROJECTS" data-num="01"><span class="lbl">PROJETS</span><span class="num">01</span></button>
+          <button class="navitem" data-fr="À PROPOS" data-en="ABOUT" data-num="02"><span class="lbl">À PROPOS</span><span class="num">02</span></button>
+          <button class="navitem" data-fr="COMPÉTENCES" data-en="SKILLS" data-num="03"><span class="lbl">COMPÉTENCES</span><span class="num">03</span></button>
+          <button class="navitem" data-fr="CONTACT" data-en="CONTACT" data-num="04"><span class="lbl">CONTACT</span><span class="num">04</span></button>
+        </nav>
+        <div class="miscpill" title="Son">
+          <span class="dot" style="background:var(--accent)"></span>
+          <span class="bar"></span>
+        </div>
+      </div>
+
+      <div class="statuspill">
+        <span id="statusLabel">DISPONIBLE</span>
+        <span class="dot pulse"></span>
+      </div>
+    </header>
+
+    <div class="rail left">
+      <div class="node top"></div>
+      <div class="line"></div>
+      <div class="node bottom"></div>
+      <div class="ticks"><span></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="rail right">
+      <div class="node top"></div>
+      <div class="line"></div>
+      <div class="node bottom"></div>
+      <div class="ticks"><span></span><span></span><span></span><span></span></div>
+    </div>
+
+    <div id="hint">déplace la souris pour faire pivoter la scène</div>
+
+    <div id="dock">
+      <button class="dockitem" data-fr="SAÉ & PROJETS" data-en="COURSEWORK">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h6l2 2h10v10H3z"/></svg>
+        <span class="lbl">SAÉ &amp; PROJETS</span>
+      </button>
+      <button class="dockitem" data-fr="WEB 3D" data-en="3D WEB">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 21 7v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v9"/></svg>
+        <span class="lbl">WEB 3D</span>
+      </button>
+      <button class="dockitem" data-fr="INTERFACES" data-en="INTERFACES">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 13 4 4 13 4 13 13Z"/><path d="M12 12 20 20"/></svg>
+        <span class="lbl">INTERFACES</span>
+      </button>
+      <button class="dockitem" data-fr="RÉSEAUX & SYSTÈME" data-en="NETWORKS & SYS">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M5 8v4h14V8M12 12v4"/></svg>
+        <span class="lbl">RÉSEAUX &amp; SYSTÈME</span>
+      </button>
+      <button class="dockitem" data-fr="OPEN SOURCE" data-en="OPEN SOURCE">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 5 3 12l5 7M16 5l5 7-5 7"/></svg>
+        <span class="lbl">OPEN SOURCE</span>
+      </button>
+      <button class="dockitem" data-fr="CV" data-en="RESUME">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l3 3v17H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+        <span class="lbl">CV</span>
+      </button>
+      <button class="dockitem" data-fr="BLOG" data-en="BLOG">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg>
+        <span class="lbl">BLOG</span>
+      </button>
+      <button class="dockitem" data-fr="LAB" data-en="LAB">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 2h6M10 2v7l-5.5 9.5A2 2 0 0 0 6.2 22h11.6a2 2 0 0 0 1.7-3.5L14 9V2"/></svg>
+        <span class="lbl">LAB</span>
+      </button>
+    </div>
+
+    <div id="clock">
+      <span class="dot pulse" style="background:var(--accent)"></span>
+      <span id="clockTime">--:--</span>
+      <span id="clockZone">GMT</span>
+    </div>
+
+    <div id="cornerTools">
+      <button class="circlebtn" id="themeBtn" title="Changer de thème">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+      </button>
+      <button class="circlebtn" id="langBtn" title="Langue / Language">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13 13 0 0 1 0 18M12 3a13 13 0 0 0 0 18"/></svg>
+      </button>
+    </div>
+
+    <div id="loader">
+      <div class="label" id="loaderLabel">CHARGEMENT DES MODÈLES… 0%</div>
+      <div class="bar-track"><div class="bar-fill" id="loaderBar"></div></div>
+      <div class="error" id="loaderError"></div>
+    </div>
+  </div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
+RectAreaLightUniformsLib.init();
+
+/* -------------------------------------------------------
+   CONFIG
+------------------------------------------------------- */
+const CONFIG = {
+  pcTargetWidth: 0.34,
+  mouseTargetLength: 0.12,
+  gapRatio: 0.18,
+  mouseForwardRatio: 0.18,
+  mouseYawDeg: 164,
+  cameraPadding: 2.4,
+  verticalFocus: 0.04,
+  maxYaw: 0.22,
+  maxPitch: 0.10,
+  maxDolly: 0.05,
+  followSpeed: 5.5
+};
+
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (prefersReducedMotion) {
+  CONFIG.maxYaw = 0; CONFIG.maxPitch = 0; CONFIG.maxDolly = 0;
+}
+
+/* -------------------------------------------------------
+   SCÈNE / CAMÉRA / RENDU
+------------------------------------------------------- */
+const app = document.getElementById("app");
+
+const scene = new THREE.Scene();
+// Brouillard bleuté pour les bords de la scène
+scene.fog = new THREE.FogExp2(0x1a2540, 0.35);
+
+const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.05, 100);
+camera.position.set(0, 0.3, 1);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+app.insertBefore(renderer.domElement, app.firstChild);
+
+const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
+
+// ---------------------------------------------------------------
+// TRAITEMENT DES MATÉRIAUX — on PRÉSERVE les textures du modèle
+// (clavier Top.png, logo Apple) et on ajuste uniquement les
+// matériaux alu (boîtier) pour le rendu argenté de la référence.
+// ---------------------------------------------------------------
+function processMaterial(material, meshName) {
+  const materials = Array.isArray(material) ? material : [material];
+  materials.forEach((mat) => {
+    if (!mat) return;
+
+    const name = (mat.name || "").toLowerCase();
+    const mesh = (meshName || "").toLowerCase();
+
+    // --- Améliore le filtrage de TOUTES les textures existantes ---
+    const mapKeys = [
+      "map","emissiveMap","roughnessMap","metalnessMap","normalMap",
+      "clearcoatMap","aoMap"
+    ];
+    mapKeys.forEach((key) => {
+      const tex = mat[key];
+      if (!tex) return;
+      tex.anisotropy = maxAnisotropy;
+      tex.generateMipmaps = true;
+      tex.minFilter = THREE.LinearMipmapLinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      tex.needsUpdate = true;
+    });
+
+    // --- Matériau : écran (Display) — fond de vagues sombres ---
+    if (name.includes("bezel") || mesh.includes("display") || mesh.includes("screengasket")) {
+      mat.color = new THREE.Color(0x080c14);
+      mat.roughness = 0.05;
+      mat.metalness = 0.0;
+      mat.needsUpdate = true;
+      return;
+    }
+
+    // --- Matériau : logo Apple — blanc lumineux ---
+    if (name.includes("apple") || mesh.includes("apple")) {
+      // Le logo a déjà sa texture, on booste juste la visibilité
+      if (!mat.map) {
+        mat.color = new THREE.Color(0xd0d8e8);
+        mat.roughness = 0.1;
+        mat.metalness = 0.8;
+      }
+      mat.needsUpdate = true;
+      return;
+    }
+
+    // --- Matériau : clavier (Keyboard) — garde la texture Top.png ---
+    if (name.includes("keyboard") || mesh.includes("keyboard")) {
+      // La texture Top.png est déjà chargée par le GLTF,
+      // on ajuste juste la luminosité / roughness
+      mat.roughness = 0.65;
+      mat.metalness = 0.0;
+      if (mat.map) {
+        mat.map.anisotropy = maxAnisotropy;
+        mat.map.needsUpdate = true;
+      }
+      mat.needsUpdate = true;
+      return;
+    }
+
+    // --- Matériau : plastique noir (touches, charnières) ---
+    if (name.includes("black") || name.includes("rubber") || name.includes("soft")) {
+      mat.color = new THREE.Color(0x0a0c10);
+      mat.roughness = 0.85;
+      mat.metalness = 0.0;
+      mat.needsUpdate = true;
+      return;
+    }
+
+    // --- Matériau : Silver / GreyMetalic / Main body — aluminium argenté ---
+    // C'est la couleur principale du boîtier MacBook, on vise
+    // un gris-argent comme la référence (pas sombre, pas blanc)
+    if (name.includes("silver") || name.includes("grey") || name.includes("main") || name === "") {
+      mat.color = new THREE.Color(0x8a9ab5); // aluminium gris-bleu doux
+      mat.roughness = 0.22;
+      mat.metalness = 0.85;
+      mat.envMapIntensity = 1.4;
+      mat.needsUpdate = true;
+      return;
+    }
+
+    // --- Fallback : gris métal neutre ---
+    mat.color = new THREE.Color(0x6a7a90);
+    mat.roughness = 0.30;
+    mat.metalness = 0.75;
+    mat.needsUpdate = true;
+  });
+}
+
+// Environnement PBR — intensité plus forte pour des reflets propres
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 1.6;
+
+/* -------------------------------------------------------
+   LUMIÈRES — ambiance "photo produit" bleue comme la référence
+------------------------------------------------------- */
+// Ambiante bleue très douce
+const ambient = new THREE.AmbientLight(0x3a4f7a, 0.9);
+scene.add(ambient);
+
+// Key light — vient du haut-gauche, grand reflet diagonal sur le couvercle
+const keyLight = new THREE.DirectionalLight(0xc8d8ff, 7.0);
+keyLight.position.set(-2.0, 4.5, 2.5);
+keyLight.castShadow = true;
+keyLight.shadow.mapSize.set(4096, 4096);
+keyLight.shadow.camera.near = 0.2;
+keyLight.shadow.camera.far = 12;
+keyLight.shadow.camera.left = -2.5;
+keyLight.shadow.camera.right = 2.5;
+keyLight.shadow.camera.top = 2.5;
+keyLight.shadow.camera.bottom = -2.5;
+keyLight.shadow.bias = -0.0003;
+scene.add(keyLight);
+
+// Fill light de face — éclaircit le clavier et le corps du laptop
+const frontFill = new THREE.DirectionalLight(0x8ab0e0, 2.5);
+frontFill.position.set(0.3, 1.5, 3.0);
+scene.add(frontFill);
+
+// Rim light bleuté arrière — contour lumineux sur le couvercle
+const rimLight = new THREE.DirectionalLight(0x4470cc, 3.5);
+rimLight.position.set(1.0, 0.5, -4.0);
+scene.add(rimLight);
+
+// Halo ponctuel central — simule la lumière réfléchie du fond de la scène
+const haloLight = new THREE.PointLight(0x6080c0, 1.2, 3.0, 2);
+haloLight.position.set(0, 0.8, 1.5);
+scene.add(haloLight);
+
+/* -------------------------------------------------------
+   SOL — ombre portée douce
+------------------------------------------------------- */
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(20, 20),
+  new THREE.ShadowMaterial({ opacity: 0.25, color: 0x0a1020 })
+);
+floor.rotation.x = -Math.PI / 2;
+floor.position.y = 0;
+floor.receiveShadow = true;
+scene.add(floor);
+
+/* -------------------------------------------------------
+   RIG
+------------------------------------------------------- */
+const rig = new THREE.Group();
+scene.add(rig);
+
+/* -------------------------------------------------------
+   OUTILS
+------------------------------------------------------- */
+function fitObject(object, { rotateUpFix = true } = {}) {
+  let box = new THREE.Box3().setFromObject(object);
+  let center = box.getCenter(new THREE.Vector3());
+  object.position.sub(center);
+
+  if (rotateUpFix) {
+    box = new THREE.Box3().setFromObject(object);
+    const size = box.getSize(new THREE.Vector3());
+    const dims = [
+      { axis: "x", val: size.x },
+      { axis: "y", val: size.y },
+      { axis: "z", val: size.z }
+    ].sort((a, b) => a.val - b.val);
+    const upAxis = dims[0].axis;
+
+    if (upAxis === "z") object.rotation.x = Math.PI / 2;
+    else if (upAxis === "x") object.rotation.z = -Math.PI / 2;
+  }
+
+  box = new THREE.Box3().setFromObject(object);
+  const size = box.getSize(new THREE.Vector3());
+  const finalCenter = box.getCenter(new THREE.Vector3());
+  object.position.x -= finalCenter.x;
+  object.position.z -= finalCenter.z;
+  object.position.y -= box.min.y;
+
+  return size;
+}
+
+let baseCamDistance = 1;
+let camCenter = new THREE.Vector3();
+let camLookY = 0;
+
+function frameRig() {
+  const box = new THREE.Box3().setFromObject(rig);
+  if (box.isEmpty()) return;
+
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+
+  const vFov = THREE.MathUtils.degToRad(camera.fov);
+  const distanceForHeight = (size.y / 2) / Math.tan(vFov / 2);
+  const distanceForWidth = (size.x / 2) / (Math.tan(vFov / 2) * camera.aspect);
+  const distance = Math.max(distanceForHeight, distanceForWidth) * CONFIG.cameraPadding;
+
+  camCenter.set(center.x, center.y + size.y * 0.5, center.z);
+  camLookY = center.y + size.y * CONFIG.verticalFocus;
+  baseCamDistance = distance;
+
+  camera.position.set(camCenter.x, camCenter.y, camCenter.z + distance);
+  camera.lookAt(camCenter.x, camLookY, camCenter.z);
+  camera.updateProjectionMatrix();
+}
+
+/* -------------------------------------------------------
+   CHARGEMENT DES MODÈLES
+------------------------------------------------------- */
+const loaderEl = document.getElementById("loader");
+const loaderBar = document.getElementById("loaderBar");
+const loaderLabel = document.getElementById("loaderLabel");
+const loaderError = document.getElementById("loaderError");
+const hint = document.getElementById("hint");
+
+const manager = new THREE.LoadingManager();
+manager.onProgress = (url, loaded, total) => {
+  const pct = total ? Math.round((loaded / total) * 100) : 0;
+  loaderBar.style.width = pct + "%";
+  loaderLabel.textContent = "CHARGEMENT DES MODÈLES… " + pct + "%";
+};
+manager.onError = (url) => {
+  loaderError.style.display = "block";
+  loaderError.textContent =
+    "Impossible de charger : " + url + ". Vérifie que le dossier model/ contient bien tous les fichiers .gltf, .bin et textures référencés.";
+};
+
+const gltfLoader = new GLTFLoader(manager);
+
+let pcGroup = null, pcSize = null;
+let mouseGroup = null, mouseSize = null;
+let pcLoaded = false, mouseLoaded = false;
+
+function tryPositionMouse() {
+  if (!pcGroup || !mouseGroup) return;
+  const gap = pcSize.x * CONFIG.gapRatio;
+  mouseGroup.position.x = pcSize.x / 2 + gap + mouseSize.x / 2;
+  mouseGroup.position.z = pcSize.z * CONFIG.mouseForwardRatio;
+  mouseGroup.rotation.y = THREE.MathUtils.degToRad(CONFIG.mouseYawDeg);
+}
+
+function onBothLoaded() {
+  if (!pcLoaded || !mouseLoaded) return;
+  tryPositionMouse();
+  frameRig();
+  loaderEl.classList.add("hide");
+  hint.classList.add("show");
+  setTimeout(() => hint.classList.remove("show"), 4500);
+}
+
+// ---- PC portable ----
+gltfLoader.load(
+  "model/thePC.gltf",
+  (gltf) => {
+    gltf.scene.traverse((node) => {
+      if (node.isMesh) {
+        node.castShadow = true;
+        node.receiveShadow = true;
+        // Passe le nom du mesh pour un traitement ciblé
+        processMaterial(node.material, node.name);
+      }
+    });
+
+    const rawSize = fitObject(gltf.scene);
+    const scaleFactor = CONFIG.pcTargetWidth / rawSize.x;
+
+    pcGroup = new THREE.Group();
+    pcGroup.add(gltf.scene);
+    pcGroup.scale.setScalar(scaleFactor);
+    rig.add(pcGroup);
+
+    pcSize = rawSize.clone().multiplyScalar(scaleFactor);
+    pcLoaded = true;
+    onBothLoaded();
+  },
+  undefined,
+  (err) => console.error("Erreur chargement PC :", err)
+);
+
+// ---- Souris ----
+gltfLoader.load(
+  "model/myMouseTECKNET.gltf",
+  (gltf) => {
+    gltf.scene.traverse((node) => {
+      if (node.isMesh) {
+        node.castShadow = true;
+        node.receiveShadow = true;
+        // Souris : anthracite mat foncé
+        const mats = Array.isArray(node.material) ? node.material : [node.material];
+        mats.forEach(mat => {
+          if (!mat) return;
+          mat.color = new THREE.Color(0x252830);
+          mat.roughness = 0.72;
+          mat.metalness = 0.0;
+          mat.needsUpdate = true;
+        });
+      }
+    });
+
+    const rawSize = fitObject(gltf.scene);
+    const referenceDim = Math.max(rawSize.x, rawSize.z);
+    const scaleFactor = CONFIG.mouseTargetLength / referenceDim;
+
+    mouseGroup = new THREE.Group();
+    mouseGroup.add(gltf.scene);
+    mouseGroup.scale.setScalar(scaleFactor);
+    rig.add(mouseGroup);
+
+    mouseSize = rawSize.clone().multiplyScalar(scaleFactor);
+    mouseLoaded = true;
+    onBothLoaded();
+  },
+  undefined,
+  (err) => console.error("Erreur chargement souris :", err)
+);
+
+/* -------------------------------------------------------
+   PARALLAX SOURIS
+------------------------------------------------------- */
+let targetNX = 0, targetNY = 0;
+let currentNX = 0, currentNY = 0;
+
+function onPointerMove(x, y) {
+  targetNX = (x / window.innerWidth) * 2 - 1;
+  targetNY = (y / window.innerHeight) * 2 - 1;
+}
+
+window.addEventListener("mousemove", (e) => onPointerMove(e.clientX, e.clientY));
+window.addEventListener("touchmove", (e) => {
+  if (e.touches.length > 0) onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: true });
+window.addEventListener("mouseleave", () => { targetNX = 0; targetNY = 0; });
+
+/* -------------------------------------------------------
+   RESIZE
+------------------------------------------------------- */
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  if (pcLoaded && mouseLoaded) frameRig();
+});
+
+/* -------------------------------------------------------
+   ANIMATION
+------------------------------------------------------- */
+const root = document.documentElement;
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const delta = Math.min(clock.getDelta(), 0.1);
+
+  const k = 1 - Math.exp(-CONFIG.followSpeed * delta);
+  currentNX += (targetNX - currentNX) * k;
+  currentNY += (targetNY - currentNY) * k;
+
+  rig.rotation.y = currentNX * CONFIG.maxYaw;
+  rig.rotation.x = currentNY * CONFIG.maxPitch;
+
+  const dolly = currentNY * CONFIG.maxDolly;
+  camera.position.set(camCenter.x, camCenter.y, camCenter.z + baseCamDistance - dolly);
+  camera.lookAt(camCenter.x, camLookY, camCenter.z);
+
+  root.style.setProperty("--px", currentNX.toFixed(4));
+  root.style.setProperty("--py", currentNY.toFixed(4));
+
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+
+<script>
+(function () {
+  const timeEl = document.getElementById("clockTime");
+  const zoneEl = document.getElementById("clockZone");
+  function updateClock() {
+    const now = new Date();
+    timeEl.textContent = now.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+    const offsetMin = -now.getTimezoneOffset();
+    const sign = offsetMin >= 0 ? "+" : "-";
+    const hours = Math.abs(offsetMin) / 60;
+    zoneEl.textContent = "GMT" + sign + hours;
+  }
+  updateClock();
+  setInterval(updateClock, 1000 * 30);
+
+  const themeBtn = document.getElementById("themeBtn");
+  themeBtn.addEventListener("click", () => {
+    const isLight = document.documentElement.getAttribute("data-theme") === "light";
+    document.documentElement.setAttribute("data-theme", isLight ? "dark" : "light");
+  });
+
+  const langBtn = document.getElementById("langBtn");
+  let lang = "fr";
+  langBtn.addEventListener("click", () => {
+    lang = lang === "fr" ? "en" : "fr";
+    document.querySelectorAll("[data-fr][data-en]").forEach((el) => {
+      const text = lang === "fr" ? el.dataset.fr : el.dataset.en;
+      const lblEl = el.querySelector(".lbl");
+      if (lblEl) lblEl.textContent = text;
+      else el.lastChild && el.lastChild.nodeType === Node.TEXT_NODE
+        ? (el.lastChild.textContent = text)
+        : null;
+    });
+    document.getElementById("roleLabel").firstElementChild.textContent =
+      lang === "fr" ? "DÉVELOPPEUR WEB" : "WEB DEVELOPER";
+    document.getElementById("statusLabel").textContent =
+      lang === "fr" ? "DISPONIBLE" : "AVAILABLE";
+  });
+})();
+</script>
+</body>
+</html>
