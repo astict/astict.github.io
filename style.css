@@ -404,9 +404,6 @@ button {
   transition: transform .3s cubic-bezier(.22,1,.36,1);
 }
 
-.langMenu.open #langBtn {
-  transform: rotate(180deg);
-}
 
 #clock {
   position: fixed; 
@@ -432,19 +429,29 @@ button {
 }
 
 .circlebtn {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  width:32px;
+  height:32px;
+  border-radius:50%;
+
+  background:var(--panel);
+  border:1px solid var(--line);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0;
+  margin:0;
+
+  line-height:0;
+  font-size:0;
+
+  color:var(--text);
+
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+
   transition:
-    background .2s ease,
     color .2s ease,
     transform .35s cubic-bezier(.22,1,.36,1);
 }
