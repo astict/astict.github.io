@@ -278,7 +278,7 @@ function onBothLoaded() {
 }
 
 // Portable
-gltfLoader.load("model/thePC.gltf", (gltf) => {
+gltfLoader.load("model/3D/thePC.gltf", (gltf) => {
   gltf.scene.traverse((node) => {
     if (node.isMesh) {
       node.castShadow = true;
@@ -301,7 +301,7 @@ gltfLoader.load("model/thePC.gltf", (gltf) => {
 }, undefined, (err) => console.error(err));
 
 // Souris
-gltfLoader.load("./model/myMouseTECKNET.gltf", (gltf) => {
+gltfLoader.load("model/3D/myMouseTECKNET.gltf", (gltf) => {
   gltf.scene.traverse((node) => {
     if (node.isMesh) {
       node.castShadow = true;

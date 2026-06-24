@@ -324,9 +324,19 @@ button {
 .dockitem:hover { background: var(--panel-strong); border-color: var(--accent); transform: translateY(-2px); }
 
 /* ===================== FOOTER CORNERS ===================== */
+
 .flag {
   font-size: 16px;
   line-height: 1;
+}
+
+.flag-icon {
+    width: 20px;      
+    height: auto;      
+    border-radius: 2px; 
+    object-fit: cover;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .langMenu {
