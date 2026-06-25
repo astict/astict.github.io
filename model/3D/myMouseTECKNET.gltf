@@ -3,6 +3,12 @@
 		"generator":"Khronos glTF Blender I/O v5.1.20",
 		"version":"2.0"
 	},
+	"extensionsUsed":[
+		"KHR_draco_mesh_compression"
+	],
+	"extensionsRequired":[
+		"KHR_draco_mesh_compression"
+	],
 	"scene":0,
 	"scenes":[
 		{
@@ -50,15 +56,25 @@
 						"NORMAL":1,
 						"TEXCOORD_0":2
 					},
+					"extensions":{
+						"KHR_draco_mesh_compression":{
+							"bufferView":0,
+							"attributes":{
+								"POSITION":0,
+								"NORMAL":1,
+								"TEXCOORD_0":2
+							}
+						}
+					},
 					"indices":3,
-					"material":0
+					"material":0,
+					"mode":4
 				}
 			]
 		}
 	],
 	"accessors":[
 		{
-			"bufferView":0,
 			"componentType":5126,
 			"count":2249940,
 			"max":[
@@ -74,19 +90,16 @@
 			"type":"VEC3"
 		},
 		{
-			"bufferView":1,
 			"componentType":5126,
 			"count":2249940,
 			"type":"VEC3"
 		},
 		{
-			"bufferView":2,
 			"componentType":5126,
 			"count":2249940,
 			"type":"VEC2"
 		},
 		{
-			"bufferView":3,
 			"componentType":5125,
 			"count":2249940,
 			"type":"SCALAR"
@@ -95,32 +108,13 @@
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":26999280,
-			"byteOffset":0,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":26999280,
-			"byteOffset":26999280,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":17999520,
-			"byteOffset":53998560,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":8999760,
-			"byteOffset":71998080,
-			"target":34963
+			"byteLength":10132366,
+			"byteOffset":0
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":80997840,
+			"byteLength":10132368,
 			"uri":"myMouseTECKNET.bin"
 		}
 	]

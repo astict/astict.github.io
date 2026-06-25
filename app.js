@@ -1,13 +1,12 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
 
 RectAreaLightUniformsLib.init();
 
-/* -------------------------------------------------------
-   CONFIG
-------------------------------------------------------- */
+/* ——————————————————- CONFIG ——————————————————- */
 const CONFIG = {
   pcTargetWidth: 0.34,
   mouseTargetLength: 0.12,
@@ -19,19 +18,25 @@ const CONFIG = {
   maxYaw: 0.22,
   maxPitch: 0.10,
   maxDolly: 0.05,
-  followSpeed: 5.5
+  followSpeed: 5.5,
+  // Angle additionnel (en degrés) appliqué à la charnière “Rotate Screen.001”
+  // pour refermer l’écran sur le clavier. Le modèle est livré ouvert : on
+  // tourne donc l’écran vers l’avant jusqu’à ce qu’il vienne se plaquer sur
+  // le clavier. Si le sens te semble inversé une fois testé dans le
+  // navigateur, passe cette valeur en positif (100 au lieu de -100).
+  pcLidCloseAngleDeg: 90,
+  // Durée du mouvement d’ouverture/fermeture, en secondes.
+  pcLidAnimDuration: 0.9
 };
 
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 if (prefersReducedMotion) {
-  CONFIG.maxYaw = 0; 
-  CONFIG.maxPitch = 0; 
+  CONFIG.maxYaw = 0;
+  CONFIG.maxPitch = 0;
   CONFIG.maxDolly = 0;
 }
 
-/* -------------------------------------------------------
-   SCÈNE / CAMÉRA / RENDU
-------------------------------------------------------- */
+/* ——————————————————- SCÈNE / CAMÉRA / RENDU ——————————————————- */
 const app = document.getElementById("app");
 
 const scene = new THREE.Scene();
@@ -52,9 +57,7 @@ app.insertBefore(renderer.domElement, app.firstChild);
 
 const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
-/* -------------------------------------------------------
-   TRAITEMENT DES MATÉRIAUX
-------------------------------------------------------- */
+/* ——————————————————- TRAITEMENT DES MATÉRIAUX ——————————————————- */
 function processMaterial(material, meshName) {
   const materials = Array.isArray(material) ? material : [material];
   materials.forEach((mat) => {
@@ -130,10 +133,9 @@ function processMaterial(material, meshName) {
 const pmrem = new THREE.PMREMGenerator(renderer);
 scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 scene.environmentIntensity = 1.6;
+pmrem.dispose(); // libère les ressources internes, l’environnement généré reste valide
 
-/* -------------------------------------------------------
-   LUMIÈRES
-------------------------------------------------------- */
+/* ——————————————————- LUMIÈRES ——————————————————- */
 const ambient = new THREE.AmbientLight(0x3a4f7a, 0.9);
 scene.add(ambient);
 
@@ -162,9 +164,13 @@ const haloLight = new THREE.PointLight(0x6080c0, 1.2, 3.0, 2);
 haloLight.position.set(0, 0.8, 1.5);
 scene.add(haloLight);
 
-/* -------------------------------------------------------
-   SOL
-------------------------------------------------------- */
+// Softbox au-dessus de la scène : pensé pour adoucir l’éclairage du dessus (effet “softbox” photo studio).
+const softbox = new THREE.RectAreaLight(0xdce8ff, 6.0, 0.9, 0.5);
+softbox.position.set(0, 1.1, 0.4);
+softbox.lookAt(0, 0, 0.3);
+scene.add(softbox);
+
+/* ——————————————————- SOL ——————————————————- */
 const floor = new THREE.Mesh(
   new THREE.PlaneGeometry(20, 20),
   new THREE.ShadowMaterial({ opacity: 0.25, color: 0x0a1020 })
@@ -177,9 +183,7 @@ scene.add(floor);
 const rig = new THREE.Group();
 scene.add(rig);
 
-/* -------------------------------------------------------
-   OUTILS CADRAGE
-------------------------------------------------------- */
+/* ——————————————————- OUTILS CADRAGE ——————————————————- */
 function fitObject(object, { rotateUpFix = true } = {}) {
   let box = new THREE.Box3().setFromObject(object);
   let center = box.getCenter(new THREE.Vector3());
@@ -234,9 +238,7 @@ function frameRig() {
   camera.updateProjectionMatrix();
 }
 
-/* -------------------------------------------------------
-   CHARGEMENT DES MODÈLES
-------------------------------------------------------- */
+/* ——————————————————- CHARGEMENT DES MODÈLES ——————————————————- */
 const loaderEl = document.getElementById("loader");
 const loaderBar = document.getElementById("loaderBar");
 const loaderLabel = document.getElementById("loaderLabel");
@@ -247,18 +249,59 @@ const manager = new THREE.LoadingManager();
 manager.onProgress = (url, loaded, total) => {
   const pct = total ? Math.round((loaded / total) * 100) : 0;
   loaderBar.style.width = pct + "%";
-  loaderLabel.textContent = "CHARGEMENT DES MODÈLES… " + pct + "%";
+  loaderLabel.textContent = "CHARGEMENT DES MODÈLES…" + pct + "%";
 };
 manager.onError = (url) => {
   loaderError.style.display = "block";
-  loaderError.textContent = "Impossible de charger : " + url + ". Vérifie tes liens.";
+  loaderError.textContent = "Impossible de charger :" + url + ". Vérifie tes liens.";
 };
 
+const dracoLoader = new DRACOLoader(manager);
+dracoLoader.setDecoderPath("https://unpkg.com/three@0.165.0/examples/jsm/libs/draco/");
+
 const gltfLoader = new GLTFLoader(manager);
+gltfLoader.setDRACOLoader(dracoLoader);
 
 let pcGroup = null, pcSize = null;
 let mouseGroup = null, mouseSize = null;
 let pcLoaded = false, mouseLoaded = false;
+
+/* — Ouverture/fermeture animée de l’écran (clic sur “thePC”) — */
+let screenHinge = null;    // le node “Rotate Screen.001” du glTF, sert de charnière
+let hingeOpenQuat = null;   // orientation “ouvert” = pose d’origine du modèle
+let hingeClosedQuat = null; // orientation “fermé” = calculée à partir de pcLidCloseAngleDeg
+let pcOpen = true;          // état logique courant
+let hingeTween = null;      // { from, to, startTime, duration } pendant l’animation
+let elapsedTime = 0;        // horloge interne, séparée de clock.getDelta() pour éviter tout conflit
+
+const raycaster = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+function togglePc() {
+  if (!screenHinge || !hingeOpenQuat || !hingeClosedQuat) return;
+  pcOpen = !pcOpen;
+  hingeTween = {
+    from: screenHinge.quaternion.clone(),
+    to: (pcOpen ? hingeOpenQuat : hingeClosedQuat).clone(),
+    startTime: elapsedTime,
+    duration: CONFIG.pcLidAnimDuration
+  };
+}
+
+function onSceneClick(clientX, clientY) {
+  if (!pcGroup) return;
+  ndc.x = (clientX / window.innerWidth) * 2 - 1;
+  ndc.y = -((clientY / window.innerHeight) * 2 - 1);
+  raycaster.setFromCamera(ndc, camera);
+  const hits = raycaster.intersectObject(pcGroup, true);
+  if (hits.length > 0) togglePc();
+}
+
+renderer.domElement.addEventListener("click", (e) => onSceneClick(e.clientX, e.clientY));
 
 function tryPositionMouse() {
   if (!pcGroup || !mouseGroup) return;
@@ -286,6 +329,33 @@ gltfLoader.load("model/3D/thePC.gltf", (gltf) => {
       processMaterial(node.material, node.name);
     }
   });
+
+  screenHinge = null;
+  let appleLogo = null;
+  gltf.scene.traverse((node) => {
+    if (!screenHinge && /rotate/i.test(node.name) && /screen/i.test(node.name)) {
+      screenHinge = node;
+    }
+    if (!appleLogo && /apple/i.test(node.name)) {
+      appleLogo = node;
+    }
+  });
+
+  if (screenHinge) {
+    if (appleLogo && appleLogo.parent !== screenHinge) {
+      gltf.scene.updateMatrixWorld(true);
+      screenHinge.attach(appleLogo);
+    }
+
+    hingeOpenQuat = screenHinge.quaternion.clone();
+    const closeDelta = new THREE.Quaternion().setFromAxisAngle(
+      new THREE.Vector3(1, 0, 0),
+      THREE.MathUtils.degToRad(CONFIG.pcLidCloseAngleDeg)
+    );
+    hingeClosedQuat = new THREE.Quaternion().multiplyQuaternions(closeDelta, hingeOpenQuat);
+  } else {
+    console.warn('Aucun node "rotate…screen…" trouvé : ouverture/fermeture désactivée.');
+  }
 
   const rawSize = fitObject(gltf.scene);
   const scaleFactor = CONFIG.pcTargetWidth / rawSize.x;
@@ -331,22 +401,35 @@ gltfLoader.load("model/3D/myMouseTECKNET.gltf", (gltf) => {
   onBothLoaded();
 }, undefined, (err) => console.error(err));
 
-/* -------------------------------------------------------
-   PARALLAX / MOUVEMENT INTERACTIF
-------------------------------------------------------- */
+/* ——————————————————- PARALLAX / MOUVEMENT INTERACTIF ——————————————————- */
 let targetNX = 0, targetNY = 0;
 let currentNX = 0, currentNY = 0;
+let lastPointerX = window.innerWidth / 2, lastPointerY = window.innerHeight / 2;
 
 function onPointerMove(x, y) {
   targetNX = (x / window.innerWidth) * 2 - 1;
   targetNY = (y / window.innerHeight) * 2 - 1;
+  lastPointerX = x;
+  lastPointerY = y;
 }
 
 window.addEventListener("mousemove", (e) => onPointerMove(e.clientX, e.clientY));
 window.addEventListener("touchmove", (e) => {
   if (e.touches.length > 0) onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
 }, { passive: true });
-window.addEventListener("mouseleave", () => { targetNX = 0; targetNY = 0; });
+
+window.addEventListener("mouseleave", () => {
+  targetNX = 0;
+  targetNY = 0;
+});
+window.addEventListener("touchend", () => {
+  targetNX = 0;
+  targetNY = 0;
+});
+window.addEventListener("touchcancel", () => {
+  targetNX = 0;
+  targetNY = 0;
+});
 
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -355,15 +438,14 @@ window.addEventListener("resize", () => {
   if (pcLoaded && mouseLoaded) frameRig();
 });
 
-/* -------------------------------------------------------
-   BOUCLE D'ANIMATION
-------------------------------------------------------- */
+/* ——————————————————- BOUCLE D’ANIMATION ——————————————————- */
 const root = document.documentElement;
 const clock = new THREE.Clock();
 
 function animate() {
   requestAnimationFrame(animate);
   const delta = Math.min(clock.getDelta(), 0.1);
+  elapsedTime += delta;
 
   const k = 1 - Math.exp(-CONFIG.followSpeed * delta);
   currentNX += (targetNX - currentNX) * k;
@@ -376,6 +458,20 @@ function animate() {
   camera.position.set(camCenter.x, camCenter.y, camCenter.z + baseCamDistance - dolly);
   camera.lookAt(camCenter.x, camLookY, camCenter.z);
 
+  if (hingeTween) {
+    const t = Math.min((elapsedTime - hingeTween.startTime) / hingeTween.duration, 1);
+    screenHinge.quaternion.slerpQuaternions(hingeTween.from, hingeTween.to, easeInOutCubic(t));
+    if (t >= 1) hingeTween = null;
+  }
+
+  if (pcGroup) {
+    ndc.x = (lastPointerX / window.innerWidth) * 2 - 1;
+    ndc.y = -((lastPointerY / window.innerHeight) * 2 - 1);
+    raycaster.setFromCamera(ndc, camera);
+    const hovering = raycaster.intersectObject(pcGroup, true).length > 0;
+    document.body.style.cursor = hovering ? "pointer" : "default";
+  }
+
   root.style.setProperty("--px", currentNX.toFixed(4));
   root.style.setProperty("--py", currentNY.toFixed(4));
 
@@ -383,16 +479,18 @@ function animate() {
 }
 animate();
 
-/* -------------------------------------------------------
-   UI & COMPOSANTS INTERACTIFS DOM
-------------------------------------------------------- */
+/* ——————————————————- UI & COMPOSANTS INTERACTIFS DOM ——————————————————- */
 (function () {
   // Horloge
   const timeEl = document.getElementById("clockTime");
   const zoneEl = document.getElementById("clockZone");
+  
   function updateClock() {
     const now = new Date();
-    timeEl.textContent = now.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+    timeEl.textContent = now.toLocaleTimeString(undefined, {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
     const offsetMin = -now.getTimezoneOffset();
     const sign = offsetMin >= 0 ? "+" : "-";
     const hours = Math.abs(offsetMin) / 60;
@@ -403,9 +501,19 @@ animate();
 
   // Thème Light/Dark
   const themeBtn = document.getElementById("themeBtn");
+
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme) {
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+    document.documentElement.setAttribute("data-theme", "light");
+  }
+
   themeBtn.addEventListener("click", () => {
     const isLight = document.documentElement.getAttribute("data-theme") === "light";
-    document.documentElement.setAttribute("data-theme", isLight ? "dark" : "light");
+    const next = isLight ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
   });
 
   // Gestion des Langues
@@ -425,30 +533,36 @@ animate();
 
   langBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    langMenu.classList.toggle("open");
+    const isOpen = langMenu.classList.toggle("open");
+    langBtn.setAttribute("aria-expanded", String(isOpen));
   });
 
   document.addEventListener("click", () => {
     langMenu.classList.remove("open");
+    langBtn.setAttribute("aria-expanded", "false");
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      langMenu.classList.remove("open");
+      langBtn.setAttribute("aria-expanded", "false");
+    }
   });
 
   document.querySelectorAll("#langDropdown button").forEach(btn => {
     btn.addEventListener("click", () => {
       const selectedLang = btn.getAttribute("data-lang");
-      
-      // Update labels fixes
+
       if (translations[selectedLang]) {
         roleLabel.textContent = translations[selectedLang].role;
         statusLabel.textContent = translations[selectedLang].status;
       }
 
-      // Update Nav pill
       navItems.forEach(item => {
         const text = item.getAttribute(`data-${selectedLang}`) || item.getAttribute("data-fr");
         item.querySelector(".lbl").textContent = text;
       });
 
-      // Update Dock items
       dockItems.forEach(item => {
         const text = item.getAttribute(`data-${selectedLang}`) || item.getAttribute("data-fr");
         item.querySelector(".lbl").textContent = text;

@@ -72,9 +72,18 @@ canvas {
   height: 100%; 
 }
 
-button { 
-  font-family: inherit; 
-  cursor: pointer; 
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Amélioration accessibilité : aucun indicateur de focus clavier n'existait.
+   On en ajoute un discret, cohérent avec la charte (couleur --accent). */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
 /* ===================== HEADER ===================== */
@@ -330,13 +339,26 @@ button {
   line-height: 1;
 }
 
-.flag-icon {
-    width: 20px;      
-    height: auto;      
-    border-radius: 2px; 
-    object-fit: cover;
-    display: inline-block;
+/* Bug corrigé : sous Windows (Chrome/Edge), un border-radius posé directement
+   sur une <img> avec object-fit laisse un fin liseré blanc d'anti-aliasing
+   aux coins arrondis — très visible sur fond sombre. On déplace l'arrondi sur
+   un conteneur overflow:hidden et on laisse l'image elle-même carrée. */
+.flag-wrap {
+    display: inline-flex;
+    width: 20px;
+    height: 14px;
+    border-radius: 2px;
+    overflow: hidden;
+    flex-shrink: 0;
     vertical-align: middle;
+}
+
+.flag-icon {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    object-fit: cover;
+    display: block;
 }
 
 .langMenu {
