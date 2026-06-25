@@ -46,7 +46,7 @@ const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.2;
+renderer.toneMappingExposure = 0.88;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -112,17 +112,19 @@ function processMaterial(material, meshName) {
     }
 
     if (name.includes("silver") || name.includes("grey") || name.includes("main") || name === "") {
-      mat.color = new THREE.Color(0x8a9ab5);
+      // Space Gray (était 0x8a9ab5, trop clair et trop réfléchissant)
+      mat.color = new THREE.Color(0x2a2c32);
       mat.roughness = 0.22;
-      mat.metalness = 0.85;
-      mat.envMapIntensity = 1.4;
+      mat.metalness = 0.88;
+      mat.envMapIntensity = 0.8;
       mat.needsUpdate = true;
       return;
     }
 
-    mat.color = new THREE.Color(0x6a7a90);
-    mat.roughness = 0.30;
-    mat.metalness = 0.75;
+    // Fallback sombre (était 0x6a7a90, trop clair)
+    mat.color = new THREE.Color(0x252830);
+    mat.roughness = 0.28;
+    mat.metalness = 0.70;
     mat.needsUpdate = true;
   });
 }
@@ -130,7 +132,7 @@ function processMaterial(material, meshName) {
 const pmrem = new THREE.PMREMGenerator(renderer);
 const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 scene.environment = envTexture;
-scene.environmentIntensity = 1.6;
+scene.environmentIntensity = 0.95;
 // FIX: on dispose le générateur PMREM APRÈS avoir assigné la texture à la scène
 // (dispose() ne détruit pas la texture, uniquement les ressources internes du générateur)
 pmrem.dispose();
@@ -139,7 +141,7 @@ pmrem.dispose();
 const ambient = new THREE.AmbientLight(0x3a4f7a, 0.9);
 scene.add(ambient);
 
-const keyLight = new THREE.DirectionalLight(0xc8d8ff, 7.0);
+const keyLight = new THREE.DirectionalLight(0xc8d8ff, 4.0);
 keyLight.position.set(-2.0, 4.5, 2.5);
 keyLight.castShadow = true;
 // FIX: shadow map réduite de 4096→2048 — divide GPU VRAM par 4, quasi-imperceptible visuellement
@@ -153,11 +155,11 @@ keyLight.shadow.camera.bottom = -2.5;
 keyLight.shadow.bias = -0.0003;
 scene.add(keyLight);
 
-const frontFill = new THREE.DirectionalLight(0x8ab0e0, 2.5);
+const frontFill = new THREE.DirectionalLight(0x8ab0e0, 1.6);
 frontFill.position.set(0.3, 1.5, 3.0);
 scene.add(frontFill);
 
-const rimLight = new THREE.DirectionalLight(0x4470cc, 3.5);
+const rimLight = new THREE.DirectionalLight(0x4470cc, 2.0);
 rimLight.position.set(1.0, 0.5, -4.0);
 scene.add(rimLight);
 
@@ -165,7 +167,7 @@ const haloLight = new THREE.PointLight(0x6080c0, 1.2, 3.0, 2);
 haloLight.position.set(0, 0.8, 1.5);
 scene.add(haloLight);
 
-const softbox = new THREE.RectAreaLight(0xdce8ff, 6.0, 0.9, 0.5);
+const softbox = new THREE.RectAreaLight(0xdce8ff, 3.2, 0.9, 0.5);
 softbox.position.set(0, 1.1, 0.4);
 softbox.lookAt(0, 0, 0.3);
 scene.add(softbox);
@@ -380,8 +382,8 @@ gltfLoader.load("model/3D/myMouseTECKNET.gltf", (gltf) => {
       const mats = Array.isArray(node.material) ? node.material : [node.material];
       mats.forEach(mat => {
         if (!mat) return;
-        mat.color = new THREE.Color(0x252830);
-        mat.roughness = 0.72;
+        mat.color = new THREE.Color(0x1e2026);   // Gris anthracite foncé
+        mat.roughness = 0.78;
         mat.metalness = 0.0;
         mat.needsUpdate = true;
       });
