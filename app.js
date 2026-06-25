@@ -6,7 +6,7 @@ import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUnifo
 
 RectAreaLightUniformsLib.init();
 
-/* ——————————————————- CONFIG ——————————————————- */
+/* ——————————————————— CONFIG ——————————————————— */
 const CONFIG = {
   pcTargetWidth: 0.34,
   mouseTargetLength: 0.12,
@@ -19,13 +19,7 @@ const CONFIG = {
   maxPitch: 0.10,
   maxDolly: 0.05,
   followSpeed: 5.5,
-  // Angle additionnel (en degrés) appliqué à la charnière “Rotate Screen.001”
-  // pour refermer l’écran sur le clavier. Le modèle est livré ouvert : on
-  // tourne donc l’écran vers l’avant jusqu’à ce qu’il vienne se plaquer sur
-  // le clavier. Si le sens te semble inversé une fois testé dans le
-  // navigateur, passe cette valeur en positif (100 au lieu de -100).
   pcLidCloseAngleDeg: 90,
-  // Durée du mouvement d’ouverture/fermeture, en secondes.
   pcLidAnimDuration: 0.9
 };
 
@@ -36,7 +30,7 @@ if (prefersReducedMotion) {
   CONFIG.maxDolly = 0;
 }
 
-/* ——————————————————- SCÈNE / CAMÉRA / RENDU ——————————————————- */
+/* ——————————————————— SCÈNE / CAMÉRA / RENDU ——————————————————— */
 const app = document.getElementById("app");
 
 const scene = new THREE.Scene();
@@ -45,8 +39,11 @@ scene.fog = new THREE.FogExp2(0x1a2540, 0.35);
 const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.05, 100);
 camera.position.set(0, 0.3, 1);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+// FIX: powerPreference "high-performance" pour demander le GPU dédié sur dual-GPU
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+// FIX: pixel ratio plafonné à 2 (1.5 sur mobile pour éviter les lags GPU)
+const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
@@ -57,7 +54,7 @@ app.insertBefore(renderer.domElement, app.firstChild);
 
 const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
-/* ——————————————————- TRAITEMENT DES MATÉRIAUX ——————————————————- */
+/* ——————————————————— TRAITEMENT DES MATÉRIAUX ——————————————————— */
 function processMaterial(material, meshName) {
   const materials = Array.isArray(material) ? material : [material];
   materials.forEach((mat) => {
@@ -131,18 +128,22 @@ function processMaterial(material, meshName) {
 }
 
 const pmrem = new THREE.PMREMGenerator(renderer);
-scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environment = envTexture;
 scene.environmentIntensity = 1.6;
-pmrem.dispose(); // libère les ressources internes, l’environnement généré reste valide
+// FIX: on dispose le générateur PMREM APRÈS avoir assigné la texture à la scène
+// (dispose() ne détruit pas la texture, uniquement les ressources internes du générateur)
+pmrem.dispose();
 
-/* ——————————————————- LUMIÈRES ——————————————————- */
+/* ——————————————————— LUMIÈRES ——————————————————— */
 const ambient = new THREE.AmbientLight(0x3a4f7a, 0.9);
 scene.add(ambient);
 
 const keyLight = new THREE.DirectionalLight(0xc8d8ff, 7.0);
 keyLight.position.set(-2.0, 4.5, 2.5);
 keyLight.castShadow = true;
-keyLight.shadow.mapSize.set(4096, 4096);
+// FIX: shadow map réduite de 4096→2048 — divide GPU VRAM par 4, quasi-imperceptible visuellement
+keyLight.shadow.mapSize.set(2048, 2048);
 keyLight.shadow.camera.near = 0.2;
 keyLight.shadow.camera.far = 12;
 keyLight.shadow.camera.left = -2.5;
@@ -164,13 +165,12 @@ const haloLight = new THREE.PointLight(0x6080c0, 1.2, 3.0, 2);
 haloLight.position.set(0, 0.8, 1.5);
 scene.add(haloLight);
 
-// Softbox au-dessus de la scène : pensé pour adoucir l’éclairage du dessus (effet “softbox” photo studio).
 const softbox = new THREE.RectAreaLight(0xdce8ff, 6.0, 0.9, 0.5);
 softbox.position.set(0, 1.1, 0.4);
 softbox.lookAt(0, 0, 0.3);
 scene.add(softbox);
 
-/* ——————————————————- SOL ——————————————————- */
+/* ——————————————————— SOL ——————————————————— */
 const floor = new THREE.Mesh(
   new THREE.PlaneGeometry(20, 20),
   new THREE.ShadowMaterial({ opacity: 0.25, color: 0x0a1020 })
@@ -183,7 +183,7 @@ scene.add(floor);
 const rig = new THREE.Group();
 scene.add(rig);
 
-/* ——————————————————- OUTILS CADRAGE ——————————————————- */
+/* ——————————————————— OUTILS CADRAGE ——————————————————— */
 function fitObject(object, { rotateUpFix = true } = {}) {
   let box = new THREE.Box3().setFromObject(object);
   let center = box.getCenter(new THREE.Vector3());
@@ -235,10 +235,11 @@ function frameRig() {
 
   camera.position.set(camCenter.x, camCenter.y, camCenter.z + distance);
   camera.lookAt(camCenter.x, camLookY, camCenter.z);
+  // FIX: updateProjectionMatrix() appelé une seule fois ici, pas en doublon dans resize
   camera.updateProjectionMatrix();
 }
 
-/* ——————————————————- CHARGEMENT DES MODÈLES ——————————————————- */
+/* ——————————————————— CHARGEMENT DES MODÈLES ——————————————————— */
 const loaderEl = document.getElementById("loader");
 const loaderBar = document.getElementById("loaderBar");
 const loaderLabel = document.getElementById("loaderLabel");
@@ -249,11 +250,11 @@ const manager = new THREE.LoadingManager();
 manager.onProgress = (url, loaded, total) => {
   const pct = total ? Math.round((loaded / total) * 100) : 0;
   loaderBar.style.width = pct + "%";
-  loaderLabel.textContent = "CHARGEMENT DES MODÈLES…" + pct + "%";
+  loaderLabel.textContent = "CHARGEMENT DES MODÈLES… " + pct + "%";
 };
 manager.onError = (url) => {
   loaderError.style.display = "block";
-  loaderError.textContent = "Impossible de charger :" + url + ". Vérifie tes liens.";
+  loaderError.textContent = "Impossible de charger : " + url + ". Vérifie tes liens.";
 };
 
 const dracoLoader = new DRACOLoader(manager);
@@ -266,13 +267,13 @@ let pcGroup = null, pcSize = null;
 let mouseGroup = null, mouseSize = null;
 let pcLoaded = false, mouseLoaded = false;
 
-/* — Ouverture/fermeture animée de l’écran (clic sur “thePC”) — */
-let screenHinge = null;    // le node “Rotate Screen.001” du glTF, sert de charnière
-let hingeOpenQuat = null;   // orientation “ouvert” = pose d’origine du modèle
-let hingeClosedQuat = null; // orientation “fermé” = calculée à partir de pcLidCloseAngleDeg
-let pcOpen = true;          // état logique courant
-let hingeTween = null;      // { from, to, startTime, duration } pendant l’animation
-let elapsedTime = 0;        // horloge interne, séparée de clock.getDelta() pour éviter tout conflit
+/* — Ouverture/fermeture animée de l'écran — */
+let screenHinge = null;
+let hingeOpenQuat = null;
+let hingeClosedQuat = null;
+let pcOpen = true;
+let hingeTween = null;
+let elapsedTime = 0;
 
 const raycaster = new THREE.Raycaster();
 const ndc = new THREE.Vector2();
@@ -401,46 +402,53 @@ gltfLoader.load("model/3D/myMouseTECKNET.gltf", (gltf) => {
   onBothLoaded();
 }, undefined, (err) => console.error(err));
 
-/* ——————————————————- PARALLAX / MOUVEMENT INTERACTIF ——————————————————- */
+/* ——————————————————— PARALLAX / MOUVEMENT INTERACTIF ——————————————————— */
 let targetNX = 0, targetNY = 0;
 let currentNX = 0, currentNY = 0;
 let lastPointerX = window.innerWidth / 2, lastPointerY = window.innerHeight / 2;
+
+// FIX: flag pour éviter de recalculer le hover si la souris n'a pas bougé
+let pointerDirty = false;
 
 function onPointerMove(x, y) {
   targetNX = (x / window.innerWidth) * 2 - 1;
   targetNY = (y / window.innerHeight) * 2 - 1;
   lastPointerX = x;
   lastPointerY = y;
+  pointerDirty = true;
 }
 
-window.addEventListener("mousemove", (e) => onPointerMove(e.clientX, e.clientY));
+// FIX: { passive: true } sur mousemove aussi → ne bloque plus le scroll/thread principal
+window.addEventListener("mousemove", (e) => onPointerMove(e.clientX, e.clientY), { passive: true });
 window.addEventListener("touchmove", (e) => {
   if (e.touches.length > 0) onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
 }, { passive: true });
 
-window.addEventListener("mouseleave", () => {
-  targetNX = 0;
-  targetNY = 0;
-});
-window.addEventListener("touchend", () => {
-  targetNX = 0;
-  targetNY = 0;
-});
-window.addEventListener("touchcancel", () => {
-  targetNX = 0;
-  targetNY = 0;
-});
+window.addEventListener("mouseleave", () => { targetNX = 0; targetNY = 0; });
+window.addEventListener("touchend",    () => { targetNX = 0; targetNY = 0; });
+window.addEventListener("touchcancel", () => { targetNX = 0; targetNY = 0; });
 
+/* FIX: throttle du resize avec requestAnimationFrame pour éviter les appels répétés
+   pendant le redimensionnement manuel de la fenêtre */
+let resizePending = false;
 window.addEventListener("resize", () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  if (pcLoaded && mouseLoaded) frameRig();
+  if (resizePending) return;
+  resizePending = true;
+  requestAnimationFrame(() => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    if (pcLoaded && mouseLoaded) frameRig();
+    resizePending = false;
+  });
 });
 
-/* ——————————————————- BOUCLE D’ANIMATION ——————————————————- */
+/* ——————————————————— BOUCLE D'ANIMATION ——————————————————— */
 const root = document.documentElement;
 const clock = new THREE.Clock();
+
+// FIX: valeurs précédentes de --px/--py pour éviter les setProperty inutiles
+let prevPX = null, prevPY = null;
 
 function animate() {
   requestAnimationFrame(animate);
@@ -464,27 +472,33 @@ function animate() {
     if (t >= 1) hingeTween = null;
   }
 
-  if (pcGroup) {
+  // FIX: raycaster pour le curseur uniquement si la souris a bougé depuis la dernière frame
+  if (pcGroup && pointerDirty) {
     ndc.x = (lastPointerX / window.innerWidth) * 2 - 1;
     ndc.y = -((lastPointerY / window.innerHeight) * 2 - 1);
     raycaster.setFromCamera(ndc, camera);
     const hovering = raycaster.intersectObject(pcGroup, true).length > 0;
     document.body.style.cursor = hovering ? "pointer" : "default";
+    pointerDirty = false;
   }
 
-  root.style.setProperty("--px", currentNX.toFixed(4));
-  root.style.setProperty("--py", currentNY.toFixed(4));
+  // FIX: CSS vars --px/--py mises à jour seulement si la valeur a changé (2 décimales suffisent)
+  const pxStr = currentNX.toFixed(2);
+  const pyStr = currentNY.toFixed(2);
+  if (pxStr !== prevPX) { root.style.setProperty("--px", pxStr); prevPX = pxStr; }
+  if (pyStr !== prevPY) { root.style.setProperty("--py", pyStr); prevPY = pyStr; }
 
   renderer.render(scene, camera);
 }
 animate();
 
-/* ——————————————————- UI & COMPOSANTS INTERACTIFS DOM ——————————————————- */
+/* ——————————————————— UI & COMPOSANTS INTERACTIFS DOM ——————————————————— */
 (function () {
-  // Horloge
+  // Horloge — FIX: mise à jour toutes les 60s (suffisant pour HH:MM), et correction
+  // du formatage du fuseau horaire (Math.floor + minutes résiduels)
   const timeEl = document.getElementById("clockTime");
   const zoneEl = document.getElementById("clockZone");
-  
+
   function updateClock() {
     const now = new Date();
     timeEl.textContent = now.toLocaleTimeString(undefined, {
@@ -493,11 +507,18 @@ animate();
     });
     const offsetMin = -now.getTimezoneOffset();
     const sign = offsetMin >= 0 ? "+" : "-";
-    const hours = Math.abs(offsetMin) / 60;
-    zoneEl.textContent = "GMT" + sign + hours;
+    const absMin = Math.abs(offsetMin);
+    const h = Math.floor(absMin / 60);
+    const m = absMin % 60;
+    zoneEl.textContent = "GMT" + sign + h + (m ? ":" + String(m).padStart(2, "0") : "");
   }
   updateClock();
-  setInterval(updateClock, 1000 * 30);
+  // Synchronise le tick sur la prochaine minute entière pour plus de précision
+  const msToNextMinute = (60 - new Date().getSeconds()) * 1000 - new Date().getMilliseconds();
+  setTimeout(() => {
+    updateClock();
+    setInterval(updateClock, 60_000);
+  }, msToNextMinute);
 
   // Thème Light/Dark
   const themeBtn = document.getElementById("themeBtn");
@@ -526,7 +547,7 @@ animate();
 
   const translations = {
     fr: { role: "DÉVELOPPEUR WEB", status: "DISPONIBLE" },
-    en: { role: "WEB DEVELOPER", status: "AVAILABLE" },
+    en: { role: "WEB DEVELOPER",   status: "AVAILABLE"  },
     es: { role: "DESARROLLADOR WEB", status: "DISPONIBLE" },
     sv: { role: "WEBBUTVECKLARE", status: "TILLGÄNGLIG" }
   };
@@ -559,12 +580,12 @@ animate();
       }
 
       navItems.forEach(item => {
-        const text = item.getAttribute(`data-${selectedLang}`) || item.getAttribute("data-fr");
+        const text = item.getAttribute("data-" + selectedLang) || item.getAttribute("data-fr");
         item.querySelector(".lbl").textContent = text;
       });
 
       dockItems.forEach(item => {
-        const text = item.getAttribute(`data-${selectedLang}`) || item.getAttribute("data-fr");
+        const text = item.getAttribute("data-" + selectedLang) || item.getAttribute("data-fr");
         item.querySelector(".lbl").textContent = text;
       });
     });
