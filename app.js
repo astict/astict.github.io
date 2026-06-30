@@ -34,7 +34,7 @@ if (prefersReducedMotion) {
 const app = document.getElementById("app");
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x1a2540, 0.35);
+scene.fog = new THREE.FogExp2(0x22242c, 0.35);
 
 const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.05, 100);
 camera.position.set(0, 0.3, 1);
@@ -44,7 +44,11 @@ const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPr
 // FIX: pixel ratio plafonné à 2 (1.5 sur mobile pour éviter les lags GPU)
 const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
-renderer.setSize(window.innerWidth, window.innerHeight);
+// FIX: false = ne pas écraser le style CSS du canvas avec des px fixes.
+// Le canvas reste "width:100%;height:100%" via CSS, et le buffer WebGL
+// est dimensionné correctement par setSize. Cela évite le désalignement
+// canvas/viewport pendant un resize (ex. snap côte-à-côte sous Windows).
+renderer.setSize(app.clientWidth, app.clientHeight, false);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.88;
 renderer.shadowMap.enabled = true;
@@ -53,6 +57,73 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 app.insertBefore(renderer.domElement, app.firstChild);
 
 const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
+
+/* ——————————————————— TEXTURE D'ÉCRAN (fond d'écran "vague de particules") ——————————————————— */
+function createScreenWallpaperTexture() {
+  const w = 1024, h = 640;
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+
+  // Fond très sombre, légèrement dégradé
+  const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+  bgGrad.addColorStop(0, "#0c0e13");
+  bgGrad.addColorStop(1, "#05060a");
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, w, h);
+
+  // Grille de points formant des vagues (effet "topographie / data wave")
+  const cols = 70, rows = 36;
+  const marginX = w * 0.04, marginY = h * 0.12;
+  const spanX = w - marginX * 2, spanY = h - marginY * 2;
+
+  for (let row = 0; row < rows; row++) {
+    ctx.beginPath();
+    let first = true;
+    for (let col = 0; col <= cols; col++) {
+      const u = col / cols;
+      const v = row / (rows - 1);
+      const x = marginX + u * spanX;
+
+      const wave =
+        Math.sin(u * 9.5 + v * 2.2) * 22 * (0.4 + v) +
+        Math.sin(u * 4.0 - v * 5.0) * 14 * (1 - v * 0.5) +
+        Math.cos(u * 14.0 + v * 1.5) * 6;
+
+      const y = marginY + v * spanY + wave;
+
+      if (first) { ctx.moveTo(x, y); first = false; }
+      else ctx.lineTo(x, y);
+
+      // Points lumineux ponctuels
+      const brightness = 0.15 + Math.max(0, Math.sin(u * 9.5 + v * 2.2)) * 0.55;
+      if (col % 2 === 0) {
+        ctx.fillStyle = `rgba(210,220,235,${brightness.toFixed(2)})`;
+        ctx.beginPath();
+        ctx.arc(x, y, 1.15, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.strokeStyle = `rgba(170,185,210,${(0.05 + row / rows * 0.10).toFixed(2)})`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Vignette douce
+  const vignette = ctx.createRadialGradient(w/2, h/2, h*0.1, w/2, h/2, h*0.85);
+  vignette.addColorStop(0, "rgba(0,0,0,0)");
+  vignette.addColorStop(1, "rgba(0,0,0,0.55)");
+  ctx.fillStyle = vignette;
+  ctx.fillRect(0, 0, w, h);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.flipY = true;
+  return texture;
+}
+
+const screenWallpaper = createScreenWallpaperTexture();
 
 /* ——————————————————— TRAITEMENT DES MATÉRIAUX ——————————————————— */
 function processMaterial(material, meshName) {
@@ -74,7 +145,19 @@ function processMaterial(material, meshName) {
       tex.needsUpdate = true;
     });
 
-    if (name.includes("bezel") || mesh.includes("display") || mesh.includes("screengasket")) {
+    // L'écran LCD lui-même (matériau "Bezel.003" dans le modèle, malgré son nom)
+    if (name.includes("bezel")) {
+      mat.color = new THREE.Color(0x000000);
+      mat.emissive = new THREE.Color(0xffffff);
+      mat.emissiveMap = screenWallpaper;
+      mat.emissiveIntensity = 1.0;
+      mat.roughness = 0.05;
+      mat.metalness = 0.0;
+      mat.needsUpdate = true;
+      return;
+    }
+
+    if (mesh.includes("display") || mesh.includes("screengasket")) {
       mat.color = new THREE.Color(0x080c14);
       mat.roughness = 0.05;
       mat.metalness = 0.0;
@@ -138,10 +221,10 @@ scene.environmentIntensity = 0.95;
 pmrem.dispose();
 
 /* ——————————————————— LUMIÈRES ——————————————————— */
-const ambient = new THREE.AmbientLight(0x3a4f7a, 0.9);
+const ambient = new THREE.AmbientLight(0x5a5e6a, 0.9);
 scene.add(ambient);
 
-const keyLight = new THREE.DirectionalLight(0xc8d8ff, 4.0);
+const keyLight = new THREE.DirectionalLight(0xf0f2f8, 4.0);
 keyLight.position.set(-2.0, 4.5, 2.5);
 keyLight.castShadow = true;
 // FIX: shadow map réduite de 4096→2048 — divide GPU VRAM par 4, quasi-imperceptible visuellement
@@ -155,19 +238,19 @@ keyLight.shadow.camera.bottom = -2.5;
 keyLight.shadow.bias = -0.0003;
 scene.add(keyLight);
 
-const frontFill = new THREE.DirectionalLight(0x8ab0e0, 1.6);
+const frontFill = new THREE.DirectionalLight(0xaab0bd, 1.6);
 frontFill.position.set(0.3, 1.5, 3.0);
 scene.add(frontFill);
 
-const rimLight = new THREE.DirectionalLight(0x4470cc, 2.0);
+const rimLight = new THREE.DirectionalLight(0x6a72c0, 1.6);
 rimLight.position.set(1.0, 0.5, -4.0);
 scene.add(rimLight);
 
-const haloLight = new THREE.PointLight(0x6080c0, 1.2, 3.0, 2);
+const haloLight = new THREE.PointLight(0x7a82a0, 1.0, 3.0, 2);
 haloLight.position.set(0, 0.8, 1.5);
 scene.add(haloLight);
 
-const softbox = new THREE.RectAreaLight(0xdce8ff, 3.2, 0.9, 0.5);
+const softbox = new THREE.RectAreaLight(0xeef0f5, 3.2, 0.9, 0.5);
 softbox.position.set(0, 1.1, 0.4);
 softbox.lookAt(0, 0, 0.3);
 scene.add(softbox);
@@ -175,7 +258,7 @@ scene.add(softbox);
 /* ——————————————————— SOL ——————————————————— */
 const floor = new THREE.Mesh(
   new THREE.PlaneGeometry(20, 20),
-  new THREE.ShadowMaterial({ opacity: 0.25, color: 0x0a1020 })
+  new THREE.ShadowMaterial({ opacity: 0.25, color: 0x101114 })
 );
 floor.rotation.x = -Math.PI / 2;
 floor.position.y = 0;
@@ -219,19 +302,41 @@ let baseCamDistance = 1;
 let camCenter = new THREE.Vector3();
 let camLookY = 0;
 
-function frameRig() {
-  const box = new THREE.Box3().setFromObject(rig);
-  if (box.isEmpty()) return;
+// BUG FIX (PC qui "saute" vers le haut quand l'écran est fermé + qu'on revient d'un autre onglet) :
+// Avant, frameRig() recalculait la bounding box du "rig" à CHAQUE appel.
+// Or quand l'écran est fermé, le rig est beaucoup plus plat/petit que quand il est ouvert.
+// Si un resize (ou un évènement assimilé, déclenché par le navigateur quand on revient
+// sur l'onglet) appelait frameRig() pendant que l'écran était fermé, la caméra se recalait
+// alors sur cette petite boîte fermée → distance et centre totalement différents → le PC
+// semblait "sauter". On fige donc UNE FOIS pour toutes la taille de référence (calculée
+// pendant que l'écran est ouvert, à son premier chargement), et on s'en sert à chaque
+// appel de frameRig(), peu importe l'état (ouvert/fermé) au moment de l'appel.
+let referenceSize = null;
+let referenceCenter = null;
 
-  const size = box.getSize(new THREE.Vector3());
-  const center = box.getCenter(new THREE.Vector3());
+function frameRig() {
+  if (!referenceSize) {
+    const initialBox = new THREE.Box3().setFromObject(rig);
+    if (initialBox.isEmpty()) return;
+    referenceSize = initialBox.getSize(new THREE.Vector3());
+    referenceCenter = initialBox.getCenter(new THREE.Vector3());
+  }
+
+  const size = referenceSize;
+  const center = referenceCenter;
 
   const vFov = THREE.MathUtils.degToRad(camera.fov);
   const distanceForHeight = (size.y / 2) / Math.tan(vFov / 2);
   const distanceForWidth = (size.x / 2) / (Math.tan(vFov / 2) * camera.aspect);
   const distance = Math.max(distanceForHeight, distanceForWidth) * CONFIG.cameraPadding;
 
-  camCenter.set(center.x, center.y + size.y * 0.5, center.z);
+  // FIX viewport-shift: camCenter.y doit rester à center.y (hauteur neutre).
+  // L'ancienne valeur (center.y + size.y * 0.5) plaçait la caméra au sommet de
+  // la bounding box ; quand la fenêtre rétrécit (snap côte-à-côte), baseCamDistance
+  // augmente fortement → l'angle de plongée diminue → les modèles remontaient
+  // visuellement. Avec camera.y == center.y, la position verticale des objets
+  // est stable quelle que soit la distance caméra / l'aspect ratio.
+  camCenter.set(center.x, center.y, center.z);
   camLookY = center.y + size.y * CONFIG.verticalFocus;
   baseCamDistance = distance;
 
@@ -413,8 +518,13 @@ let lastPointerX = window.innerWidth / 2, lastPointerY = window.innerHeight / 2;
 let pointerDirty = false;
 
 function onPointerMove(x, y) {
-  targetNX = (x / window.innerWidth) * 2 - 1;
-  targetNY = (y / window.innerHeight) * 2 - 1;
+  // FIX: app.clientWidth/Height reflète la taille réelle du canvas après resize,
+  // contrairement à window.innerWidth qui peut encore avoir l'ancienne valeur
+  // dans le même frame que le resize (décalage NDC → parallax qui saute).
+  const w = app.clientWidth;
+  const h = app.clientHeight;
+  targetNX = (x / w) * 2 - 1;
+  targetNY = (y / h) * 2 - 1;
   lastPointerX = x;
   lastPointerY = y;
   pointerDirty = true;
@@ -430,20 +540,24 @@ window.addEventListener("mouseleave", () => { targetNX = 0; targetNY = 0; });
 window.addEventListener("touchend",    () => { targetNX = 0; targetNY = 0; });
 window.addEventListener("touchcancel", () => { targetNX = 0; targetNY = 0; });
 
-/* FIX: throttle du resize avec requestAnimationFrame pour éviter les appels répétés
-   pendant le redimensionnement manuel de la fenêtre */
-let resizePending = false;
-window.addEventListener("resize", () => {
-  if (resizePending) return;
-  resizePending = true;
-  requestAnimationFrame(() => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    if (pcLoaded && mouseLoaded) frameRig();
-    resizePending = false;
-  });
-});
+/* FIX: ResizeObserver sur #app au lieu de window "resize" + requestAnimationFrame.
+   ResizeObserver se déclenche APRÈS le layout et AVANT le paint du navigateur,
+   donc le canvas est toujours synchronisé avec sa taille réelle — plus de glitch
+   quand on snappe une fenêtre côte à côte (YouTube, autre onglet, etc.).
+   L'ancien système (resize + resizePending + RAF) pouvait rater des événements
+   intermédiaires et laisser le canvas à l'ancienne taille pendant 1-2 frames. */
+new ResizeObserver(() => {
+  const w = app.clientWidth;
+  const h = app.clientHeight;
+  if (!w || !h) return;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h, false);
+  // Recalcule les coordonnées parallax avec les nouvelles dimensions
+  targetNX = (lastPointerX / w) * 2 - 1;
+  targetNY = (lastPointerY / h) * 2 - 1;
+  if (pcLoaded && mouseLoaded) frameRig();
+}).observe(app);
 
 /* ——————————————————— BOUCLE D'ANIMATION ——————————————————— */
 const root = document.documentElement;

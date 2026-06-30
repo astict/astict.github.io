@@ -96,9 +96,6 @@ a:focus-visible {
   padding: 26px 32px;
   z-index: 5;
   pointer-events: none;
-  /* FIX: will-change sur les éléments qui bougent via CSS vars → GPU layer dédié */
-  will-change: transform;
-  transform: translate(calc(var(--px,0) * -3px), calc(var(--py,0) * -2px));
 }
 
 #header > * { 
@@ -249,14 +246,10 @@ a:focus-visible {
 
 .rail.left { 
   left: 30px; 
-  will-change: transform;
-  transform: translateY(-50%) translateX(calc(var(--px,0) * -6px)); 
 }
 
 .rail.right { 
   right: 30px; 
-  will-change: transform;
-  transform: translateY(-50%) translateX(calc(var(--px,0) * 6px)); 
 }
 
 .rail .line {
@@ -304,8 +297,7 @@ a:focus-visible {
   position: fixed; 
   bottom: 24px; 
   left: 50%;
-  will-change: transform;
-  transform: translateX(-50%) translateX(calc(var(--px,0) * 4px)) translateY(calc(var(--py,0) * 3px));
+  transform: translateX(-50%);
   display: flex; 
   gap: 8px; 
   z-index: 5;
@@ -339,7 +331,7 @@ a:focus-visible {
   display: inline-flex;
   width: 20px;
   height: 14px;
-  border-radius: 2.5px;
+  border-radius: 2px;
   overflow: hidden;
   flex-shrink: 0;
   vertical-align: middle;
