@@ -19,6 +19,7 @@ const CONFIG = {
   maxPitch: 0.10,
   maxDolly: 0.05,
   followSpeed: 5.5,
+  baseTiltDeg: +6,
   pcLidCloseAngleDeg: 90,
   pcLidAnimDuration: 0.9
 };
@@ -576,7 +577,7 @@ function animate() {
   currentNY += (targetNY - currentNY) * k;
 
   rig.rotation.y = currentNX * CONFIG.maxYaw;
-  rig.rotation.x = currentNY * CONFIG.maxPitch;
+  rig.rotation.x = THREE.MathUtils.degToRad(CONFIG.baseTiltDeg) + currentNY * CONFIG.maxPitch;
 
   const dolly = currentNY * CONFIG.maxDolly;
   camera.position.set(camCenter.x, camCenter.y, camCenter.z + baseCamDistance - dolly);
