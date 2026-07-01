@@ -221,8 +221,31 @@ a:focus-visible {
 }
 
 .navpill .icobtn:hover {
-  transform: rotate(180deg) scale(1.08);
+  transform: rotate(220deg) scale(1.08);
   box-shadow: 0 0 30px rgba(110,168,255,.45);
+}
+
+/* ---------- WHEEL ICON (roue de bateau, ex-étoile) ---------- */
+.navpill .icobtn .wheel-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  background-color: var(--accent);
+  -webkit-mask-image: url('model/2D/roueBateau.svg');
+          mask-image: url('model/2D/roueBateau.svg');
+  -webkit-mask-size: contain;
+          mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+          mask-position: center;
+  transition:
+    transform .6s cubic-bezier(.22,1,.36,1),
+    background-color .35s ease;
+}
+
+.navpill .icobtn:hover .wheel-icon {
+  transform: rotate(220deg);
 }
 
 /* ---------- NAV ITEMS (PREMIUM HOVER INTEGRATED) ---------- */
