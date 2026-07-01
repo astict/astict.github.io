@@ -299,7 +299,7 @@ a:focus-visible {
 }
 
 .navitem:hover {
-  transform: translateY(-0.5px);
+  transform: translateY(-0.1px);
   color: white;
 }
 

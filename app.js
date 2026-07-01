@@ -636,22 +636,18 @@ animate();
     setInterval(updateClock, 60_000);
   }, msToNextMinute);
 
-  // Thème Light/Dark
-  const themeBtn = document.getElementById("themeBtn");
+  // Thème Light/Dark — Version optimisée synchrone avec sélecteur premium (.theme-toggle)
+  const themeBtn = document.querySelector(".theme-toggle");
 
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme) {
-    document.documentElement.setAttribute("data-theme", savedTheme);
-  } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-    document.documentElement.setAttribute("data-theme", "light");
+  if (themeBtn) {
+    themeBtn.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
+    });
   }
-
-  themeBtn.addEventListener("click", () => {
-    const isLight = document.documentElement.getAttribute("data-theme") === "light";
-    const next = isLight ? "dark" : "light";
-    document.documentElement.setAttribute("data-theme", next);
-    localStorage.setItem("theme", next);
-  });
 
   // Gestion des Langues
   const langBtn = document.getElementById("langBtn");

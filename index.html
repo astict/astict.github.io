@@ -6,6 +6,15 @@
   <meta name="description" content="Portfolio 3D de Thomas Astic — Développeur Web, étudiant BUT Informatique." />
   <title>Thomas Astic — Portfolio</title>
   
+  <script>
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    } else {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  </script>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -119,7 +128,7 @@
     </div>
 
     <div id="cornerTools">
-      <button class="circlebtn" id="themeBtn" title="Changer de thème" aria-label="Changer de thème">
+      <button class="circlebtn theme-toggle" id="themeBtn" title="Changer de thème" aria-label="Changer de thème">
         <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
       </button>
       <div class="langMenu">
