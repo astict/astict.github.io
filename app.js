@@ -650,6 +650,51 @@ animate();
     });
   }
 
+  /* ——————————————————— FILTRAGE INTERACTIF DU DOCK ——————————————————— */
+  const navItemsList = document.querySelectorAll(".navitem");
+  const dockItemsList = document.querySelectorAll(".dockitem");
+  const homeBtn = document.querySelector(".navpill .icobtn");
+
+  const categoryMap = {
+    "01": "projets",
+    "02": "apropos",
+    "03": "competences",
+    "04": "contact"
+  };
+
+  navItemsList.forEach(item => {
+    item.addEventListener("click", () => {
+      const num = item.getAttribute("data-num");
+      const targetCat = categoryMap[num];
+
+      dockItemsList.forEach(dockItem => {
+        if (dockItem.getAttribute("data-cat") === targetCat) {
+          dockItem.style.display = "inline-flex";
+          // Transition fluide
+          setTimeout(() => {
+            dockItem.style.opacity = "1";
+            dockItem.style.transform = "translateY(0)";
+          }, 10);
+        } else {
+          dockItem.style.display = "none";
+          dockItem.style.opacity = "0";
+        }
+      });
+    });
+  });
+
+  if (homeBtn) {
+    homeBtn.addEventListener("click", () => {
+      dockItemsList.forEach(dockItem => {
+        dockItem.style.display = "inline-flex";
+        setTimeout(() => {
+          dockItem.style.opacity = "1";
+          dockItem.style.transform = "translateY(0)";
+        }, 10);
+      });
+    });
+  }
+
   // Gestion des Langues
   const langBtn = document.getElementById("langBtn");
   const langMenu = document.querySelector(".langMenu");

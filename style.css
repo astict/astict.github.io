@@ -653,7 +653,7 @@ a:focus-visible {
 /* ===================== HINT ===================== */
 #hint {
   position: absolute; 
-  bottom: 78px; 
+  bottom: 140px; 
   left: 50%;
   transform: translateX(-50%);
   font-size: 11px; 
