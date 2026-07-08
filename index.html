@@ -6,19 +6,21 @@
   <meta name="description" content="Portfolio 3D de Thomas Astic — Développeur Web, étudiant BUT Informatique." />
   <title>Thomas Astic — Portfolio</title>
   
-  <script>
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      document.documentElement.setAttribute("data-theme", savedTheme);
-    } else {
-      document.documentElement.setAttribute("data-theme", "dark");
-    }
-  </script>
-  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   
+  <style>
+    html, body { margin: 0; }
+    #loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 42%, rgba(80,110,170,0.55) 0%, rgba(35,55,95,0.45) 35%, rgba(15,22,42,0.0) 70%),
+        radial-gradient(ellipse 120% 120% at 50% 50%, #2a3552 0%, #1a2035 45%, #0e1525 100%);
+    }
+  </style>
   <link rel="stylesheet" href="style.css">
   
   <script type="importmap">
@@ -193,9 +195,6 @@
     </div>
 
     <div id="cornerTools">
-      <button class="circlebtn theme-toggle" id="themeBtn" title="Changer de thème" aria-label="Changer de thème">
-        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
-      </button>
       <div class="langMenu">
         <button class="circlebtn" id="langBtn" title="Langue" aria-label="Changer de langue" aria-haspopup="true" aria-expanded="false">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">

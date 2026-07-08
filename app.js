@@ -635,19 +635,6 @@ animate();
     setInterval(updateClock, 60_000);
   }, msToNextMinute);
 
-  // Thème Light/Dark — Version optimisée synchrone avec sélecteur premium (.theme-toggle)
-  const themeBtn = document.querySelector(".theme-toggle");
-
-  if (themeBtn) {
-    themeBtn.addEventListener("click", () => {
-      const current = document.documentElement.getAttribute("data-theme");
-      const next = current === "dark" ? "light" : "dark";
-      
-      document.documentElement.setAttribute("data-theme", next);
-      localStorage.setItem("theme", next);
-    });
-  }
-
   /* ——————————————————— FILTRAGE INTERACTIF DU DOCK ——————————————————— */
   const navItemsList = document.querySelectorAll(".navitem");
   const dockItemsList = document.querySelectorAll(".dockitem");

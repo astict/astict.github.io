@@ -22,18 +22,6 @@
       var(--bg-3) 100%);
 }
 
-[data-theme="light"] {
-  --bg-1: #d4dae8;
-  --bg-2: #bec8dc;
-  --bg-3: #c0c8d8;
-  --text: #12141a;
-  --text-dim: #5b6275;
-  --line: rgba(10,12,20,0.12);
-  --line-soft: rgba(10,12,20,0.07);
-  --panel: rgba(10,12,20,0.04);
-  --panel-strong: rgba(10,12,20,0.07);
-}
-
 * { 
   margin: 0; 
   padding: 0; 
