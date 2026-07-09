@@ -349,6 +349,7 @@ function frameRig() {
 
 /* ——————————————————— CHARGEMENT DES MODÈLES ——————————————————— */
 const loaderEl = document.getElementById("loader");
+const loaderBar = document.getElementById("loaderBar");
 const loaderLabel = document.getElementById("loaderLabel");
 const loaderError = document.getElementById("loaderError");
 const hint = document.getElementById("hint");
@@ -356,6 +357,7 @@ const hint = document.getElementById("hint");
 const manager = new THREE.LoadingManager();
 manager.onProgress = (url, loaded, total) => {
   const pct = total ? Math.round((loaded / total) * 100) : 0;
+  loaderBar.style.width = pct + "%";
   loaderLabel.textContent = "CHARGEMENT DES MODÈLES… " + pct + "%";
 };
 manager.onError = (url) => {
@@ -634,6 +636,19 @@ animate();
     updateClock();
     setInterval(updateClock, 60_000);
   }, msToNextMinute);
+
+  // Thème Light/Dark — Version optimisée synchrone avec sélecteur premium (.theme-toggle)
+  const themeBtn = document.querySelector(".theme-toggle");
+
+  if (themeBtn) {
+    themeBtn.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
+    });
+  }
 
   /* ——————————————————— FILTRAGE INTERACTIF DU DOCK ——————————————————— */
   const navItemsList = document.querySelectorAll(".navitem");
