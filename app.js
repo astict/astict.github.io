@@ -349,7 +349,7 @@ function frameRig() {
 
 /* ——————————————————— CHARGEMENT DES MODÈLES ——————————————————— */
 const loaderEl = document.getElementById("loader");
-const loaderBar = document.getElementById("loaderBar");
+const loaderPct = document.getElementById("loaderPct");
 const loaderLabel = document.getElementById("loaderLabel");
 const loaderError = document.getElementById("loaderError");
 const hint = document.getElementById("hint");
@@ -357,8 +357,7 @@ const hint = document.getElementById("hint");
 const manager = new THREE.LoadingManager();
 manager.onProgress = (url, loaded, total) => {
   const pct = total ? Math.round((loaded / total) * 100) : 0;
-  loaderBar.style.width = pct + "%";
-  loaderLabel.textContent = "CHARGEMENT DES MODÈLES… " + pct + "%";
+  loaderPct.textContent = pct + "%";
 };
 manager.onError = (url) => {
   loaderError.style.display = "block";
@@ -424,6 +423,7 @@ function onBothLoaded() {
   if (!pcLoaded || !mouseLoaded) return;
   tryPositionMouse();
   frameRig();
+  loaderPct.textContent = "100%";
   loaderEl.classList.add("hide");
   hint.classList.add("show");
   setTimeout(() => hint.classList.remove("show"), 4500);

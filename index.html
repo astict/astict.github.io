@@ -225,8 +225,13 @@
     </div>
 
     <div id="loader">
-      <div class="label" id="loaderLabel">CHARGEMENT DES MODÈLES… 0%</div>
-      <div class="bar-track"><div class="bar-fill" id="loaderBar"></div></div>
+      <div class="loader-scene">
+        <video id="loaderFish" class="loader-fish" src="model/mp4/Fish.webm" autoplay loop muted playsinline></video>
+        <div class="loader-text">
+          <div class="loader-pct" id="loaderPct">0%</div>
+          <div class="loader-label" id="loaderLabel">CHARGEMENT…</div>
+        </div>
+      </div>
       <div class="error" id="loaderError"></div>
     </div>
   </div>

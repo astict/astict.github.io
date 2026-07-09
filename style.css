@@ -669,6 +669,15 @@ a:focus-visible {
 #hint.show { opacity: 1; }
 
 /* ===================== LOADER ===================== */
+
+@font-face {
+  font-family: 'Nexa';
+  src: url('fonts/Nexa-Bold.woff2') format('woff2'), /* Remplace par ton chemin exact */
+       url('fonts/Nexa-Bold.woff') format('woff');
+  font-weight: 700; /* Pour le pourcentage (loader-pct) */
+  font-style: normal;
+}
+
 #loader {
   position: absolute; 
   inset: 0;
@@ -690,17 +699,49 @@ a:focus-visible {
 
 #loader.hide { opacity: 0; pointer-events: none; }
 
-#loader .bar-track {
-  width: 220px; 
-  height: 2px; 
-  background: var(--line);
-  border-radius: 2px; 
-  overflow: hidden; 
-  margin-top: 18px;
+.loader-scene {
+  position: relative;
+  width: 710px;
+  height: 710px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-#loader .bar-fill { width: 0%; height: 100%; background: var(--accent); transition: width .2s ease; }
-#loader .label    { font-size: 11px; color: var(--text-dim); letter-spacing: 1.5px; }
+.loader-fish {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.loader-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-family: 'Nexa', "Segoe UI", Roboto, sans-serif;
+}
+
+#loader .loader-pct {
+  font-size: 44px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: var(--text);
+  line-height: 1;
+}
+
+#loader .loader-label {
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+}
 
 #loader .error {
   margin-top: 14px; 
