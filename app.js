@@ -691,10 +691,10 @@ animate();
   const dockItems = document.querySelectorAll(".dockitem");
 
   const translations = {
-    fr: { role: "DÉVELOPPEUR WEB", status: "DISPONIBLE" },
-    en: { role: "WEB DEVELOPER",   status: "AVAILABLE"  },
-    es: { role: "DESARROLLADOR WEB", status: "DISPONIBLE" },
-    sv: { role: "WEBBUTVECKLARE", status: "TILLGÄNGLIG" }
+    fr: { role: "ÉTUDIANT", status: "DISPONIBLE" },
+    en: { role: "STUDENT",   status: "AVAILABLE"  },
+    es: { role: "ESTUDIANTE", status: "DISPONIBLE" },
+    sv: { role: "STUDENT", status: "TILLGÄNGLIG" }
   };
 
   langBtn.addEventListener("click", (e) => {
@@ -733,6 +733,10 @@ animate();
         const text = item.getAttribute("data-" + selectedLang) || item.getAttribute("data-fr");
         item.querySelector(".lbl").textContent = text;
       });
+
+      const loaderText = loaderLabel.getAttribute("data-" + selectedLang) || loaderLabel.getAttribute("data-fr");
+      if (loaderText) loaderLabel.textContent = loaderText;
+      // -----------------------------------
     });
   });
 })();
