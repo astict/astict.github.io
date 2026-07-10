@@ -649,6 +649,28 @@ animate();
     "04": "contact"
   };
 
+  // FIX: on ne pose plus transform/opacity/display en style inline sur les
+  // .dockitem. Un style inline a une spécificité plus forte que n'importe
+  // quelle règle CSS, y compris .dockitem:hover — une fois posé, le hover
+  // (translateY(-2px)) ne pouvait donc plus jamais s'appliquer après un
+  // premier clic dans la navbar. On pilote désormais l'affichage via des
+  // classes CSS (.dockitem--hidden / .dockitem--enter), ce qui laisse le
+  // :hover du CSS reprendre la main normalement.
+  function showDockItem(dockItem) {
+    dockItem.classList.remove("dockitem--hidden");
+    dockItem.classList.add("dockitem--enter");
+    // Double rAF : on force le navigateur à peindre l'état "entrant" (opacité 0)
+    // avant de retirer la classe, pour obtenir un vrai fondu au lieu d'un saut.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => dockItem.classList.remove("dockitem--enter"));
+    });
+  }
+
+  function hideDockItem(dockItem) {
+    dockItem.classList.add("dockitem--hidden");
+    dockItem.classList.remove("dockitem--enter");
+  }
+
   navItemsList.forEach(item => {
     item.addEventListener("click", () => {
       const num = item.getAttribute("data-num");
@@ -656,15 +678,9 @@ animate();
 
       dockItemsList.forEach(dockItem => {
         if (dockItem.getAttribute("data-cat") === targetCat) {
-          dockItem.style.display = "inline-flex";
-          // Transition fluide
-          setTimeout(() => {
-            dockItem.style.opacity = "1";
-            dockItem.style.transform = "translateY(0)";
-          }, 10);
+          showDockItem(dockItem);
         } else {
-          dockItem.style.display = "none";
-          dockItem.style.opacity = "0";
+          hideDockItem(dockItem);
         }
       });
     });
@@ -672,13 +688,7 @@ animate();
 
   if (homeBtn) {
     homeBtn.addEventListener("click", () => {
-      dockItemsList.forEach(dockItem => {
-        dockItem.style.display = "inline-flex";
-        setTimeout(() => {
-          dockItem.style.opacity = "1";
-          dockItem.style.transform = "translateY(0)";
-        }, 10);
-      });
+      dockItemsList.forEach(dockItem => showDockItem(dockItem));
     });
   }
 

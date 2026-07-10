@@ -423,11 +423,24 @@ a:focus-visible {
   color: var(--text);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  transition: background .2s ease, transform .2s ease, border-color .2s ease;
+  opacity: 1;
+  transition: background .2s ease, transform .2s ease, border-color .2s ease, opacity .3s ease;
 }
 
 .dockitem svg { width: 13px; height: 13px; opacity: .85; flex-shrink: 0; }
 .dockitem:hover { background: var(--panel-strong); border-color: var(--accent); transform: translateY(-2px); }
+
+/* FIX: le filtrage du dock (JS) pilote maintenant l'affichage via ces classes
+   plutôt qu'en écrivant transform/opacity en style inline sur l'élément —
+   un style inline aurait une spécificité plus forte que .dockitem:hover et
+   empêchait définitivement l'effet de survol après un premier clic. */
+.dockitem.dockitem--hidden {
+  display: none;
+}
+
+.dockitem.dockitem--enter {
+  opacity: 0;
+}
 
 /* ===================== FOOTER CORNERS ===================== */
 .flag-wrap {
