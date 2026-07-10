@@ -638,8 +638,7 @@ a:focus-visible {
 }
 
 #loader.hide {
-  transform: translateY(-100%);
-  opacity: 0.4;
+  opacity: 0;
   pointer-events: none;
 }
 
