@@ -1,0 +1,106 @@
+/* ===================== HINT ===================== */
+#hint {
+  position: absolute;
+  bottom: 140px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.6px;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 1s ease;
+  z-index: 4;
+}
+
+#hint.show { opacity: 1; }
+
+/* ===================== LOADER ===================== */
+
+@font-face {
+  font-family: 'Nexa';
+  src: url('../fonts/Nexa-Bold.woff2') format('woff2'), /* Remplace par ton chemin exact */
+       url('../fonts/Nexa-Bold.woff') format('woff');
+  font-weight: 700; /* Pour le pourcentage (loader-pct) */
+  font-style: normal;
+}
+
+#loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: transform .9s cubic-bezier(0.65, 0, 0.35, 1), opacity .9s ease;
+  will-change: transform;
+}
+
+#loader::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--bg-gradient);
+  z-index: -1;
+}
+
+#loader.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader-scene {
+  position: relative;
+  width: 710px;
+  height: 710px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-fish {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.loader-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-family: 'Nexa', "Segoe UI", Roboto, sans-serif;
+}
+
+#loader .loader-pct {
+  font-size: 44px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: var(--text);
+  line-height: 1;
+}
+
+#loader .loader-label {
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+}
+
+#loader .error {
+  margin-top: 14px;
+  font-size: 11px;
+  color: #ff8a8a;
+  max-width: 340px;
+  text-align: center;
+  line-height: 1.6;
+  display: none;
+}

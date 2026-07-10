@@ -1,0 +1,146 @@
+/* ===================== SÉLECTEUR DE LANGUE / HORLOGE / OUTILS DE COIN ===================== */
+.flag-wrap {
+  display: inline-flex;
+  width: 20px;
+  height: 14px;
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+  vertical-align: middle;
+  isolation: isolate;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+.flag-icon {
+  width: 99%;
+  height: 99%;
+  border-radius: 0;
+  object-fit: cover;
+  display: block;
+  transform: scale(1);
+  -webkit-transform: scale(1);
+}
+
+.langMenu {
+  position: relative;
+}
+
+#langDropdown {
+  position: absolute;
+  bottom: 45px;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px) scale(.92);
+  transform-origin: bottom right;
+  transition:
+    opacity .25s ease,
+    transform .3s cubic-bezier(.22,1,.36,1),
+    visibility .25s ease;
+}
+
+.langMenu.open #langDropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+#langDropdown button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateX(10px);
+  transition:
+    background .2s ease 0s,
+    color      .2s ease 0s,
+    transform  .25s ease,
+    opacity    .25s ease;
+}
+
+.langMenu.open #langDropdown button {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.langMenu.open #langDropdown button:nth-child(1) { transition-property: transform, opacity; transition-delay: .05s; }
+.langMenu.open #langDropdown button:nth-child(2) { transition-property: transform, opacity; transition-delay: .10s; }
+.langMenu.open #langDropdown button:nth-child(3) { transition-property: transform, opacity; transition-delay: .15s; }
+.langMenu.open #langDropdown button:nth-child(4) { transition-property: transform, opacity; transition-delay: .20s; }
+
+#langDropdown button:hover {
+  background: var(--panel-strong);
+  color: var(--accent);
+  transition-delay: 0s;
+}
+
+#langBtn {
+  display: inline-block;
+  transform: rotate(0deg);
+  transition: transform .3s cubic-bezier(.22,1,.36,1);
+}
+
+#clock {
+  position: fixed;
+  bottom: 26px;
+  left: 32px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  pointer-events: none;
+}
+
+#cornerTools {
+  position: fixed;
+  bottom: 22px;
+  right: 28px;
+  z-index: 5;
+  display: flex;
+  gap: 8px;
+}
+
+.circlebtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  line-height: 0;
+  font-size: 0;
+  color: var(--text);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition:
+    color      .2s ease,
+    background .2s ease,
+    transform  .35s cubic-bezier(.22,1,.36,1);
+}
+
+.circlebtn:hover { background: var(--panel-strong); color: var(--accent); }
+.circlebtn svg   { width: 14px; height: 14px; }

@@ -1,0 +1,58 @@
+/* ===================== SIDE RAILS ===================== */
+.rail {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 300px;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.rail.left {
+  left: 30px;
+}
+
+.rail.right {
+  right: 30px;
+}
+
+.rail .line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-image: linear-gradient(var(--line) 50%, transparent 50%);
+  background-size: 1px 8px;
+}
+
+.rail .node {
+  position: absolute;
+  left: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--bg-1);
+}
+
+.rail .node.top    { top: -4px;    }
+.rail .node.bottom { bottom: -4px; }
+
+.ticks {
+  position: absolute;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.rail.left  .ticks { right: 10px; align-items: flex-end;   }
+.rail.right .ticks { left:  10px; align-items: flex-start; }
+
+.rail .ticks span              { display: block; height: 1px; background: var(--line);   }
+.rail .ticks span:nth-child(1) { width: 46px; }
+.rail .ticks span:nth-child(2) { width: 30px; }
+.rail .ticks span:nth-child(3) { width: 38px; background: var(--accent); opacity: .7; }
+.rail .ticks span:nth-child(4) { width: 18px; }

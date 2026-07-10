@@ -1,0 +1,18 @@
+/* ===================== MEDIA QUERIES ===================== */
+@media (prefers-reduced-motion: reduce) {
+  .dot.pulse { animation: none; }
+  #langDropdown,
+  #langDropdown button,
+  #langBtn,
+  .circlebtn { transition: none; }
+  .navpill,
+  .navpill::before { animation: none; }
+}
+
+@media (max-width: 760px) {
+  .navwrap .navitem .num { display: none; }
+  #dock                  { gap: 6px; }
+  .dockitem              { padding: 7px 10px; font-size: 9.5px; }
+  .dockitem svg          { display: none; }
+  .rail                  { display: none; }
+}
