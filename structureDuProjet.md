@@ -22,7 +22,7 @@ monPortfolio/
 │   ├── interaction.js     parallax souris/tactile, resize, boucle d'animation
 │   ├── ui.js              horloge, filtrage du dock, sélecteur de langue
 │   └── main.js            point d'entrée : importe et démarre le tout
-└── model/                 tous les outils / modèles externes utilisés
+└── model/                 
     ├── 2D/                roueBateau.svg
     ├── 3D/                AppleLogo.png, myMouseTECKNET.bin, myMouseTECKNET.gltf, thePC.bin, thePC.gltf, Top.png
     ├── flag/              es.svg, fr.webp, gb.svg, se.svg
