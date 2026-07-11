@@ -9,7 +9,7 @@ const textureLoader = new THREE.TextureLoader();
 // sous-région du UV 0-1 (mesurée directement dans le .gltf), pas tout l'espace.
 // Sans ce recalage, l'image se retrouverait recadrée sur cette petite zone
 // centrale au lieu de remplir toute la dalle.
-const SCREEN_UV = { uMin: 0.1892, uMax: 0.8125, vMin: 0.2091, vMax: 0.7341 };
+const SCREEN_UV = { uMin: 0.2102, uMax: 0.7800, vMin: 0.2700, vMax: 0.7900 };
 // Ratio largeur/hauteur réel de la dalle, mesuré sur la géométrie (≈ 1.52:1)
 const SCREEN_ASPECT = 1.523;
 
