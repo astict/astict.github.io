@@ -4,7 +4,7 @@ import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { CONFIG } from "./config.js";
 import { state } from "./state.js";
 import { camera, renderer, rig } from "./scene-setup.js";
-import { processMaterial } from "./materials.js";
+import { processMaterial, setupScreenMaterial } from "./materials.js";
 import { fitObject, frameRig } from "./framing.js";
 
 /* ——————————————————— CHARGEMENT DES MODÈLES ——————————————————— */
@@ -84,13 +84,35 @@ function onBothLoaded() {
 export function loadModels() {
   // Portable
   gltfLoader.load("model/3D/thePC.gltf", (gltf) => {
+    let screenMeshFound = false;
     gltf.scene.traverse((node) => {
       if (node.isMesh) {
         node.castShadow = true;
         node.receiveShadow = true;
-        processMaterial(node.material, node.name);
+
+        // "Display.001" = la vraie dalle LCD. Dans le fichier source, elle partage
+        // par défaut le matériau alu du châssis ("GreyMetalic.002") : on le clone
+        // pour cette dalle uniquement, sinon la modifier affecterait aussi le
+        // reste de la coque (BaseCover, Main Body, Trackpad, etc.).
+        // Comparaison "assainie" (sans ponctuation/casse) pour tolérer d'éventuelles
+        // variations de nommage entre exports ("Display.001", "Display001", etc.).
+        const sanitized = (node.name || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (sanitized === "display001") {
+          screenMeshFound = true;
+          const sharedMat = Array.isArray(node.material) ? node.material[0] : node.material;
+          const screenMat = sharedMat.clone();
+          node.material = screenMat;
+          setupScreenMaterial(screenMat);
+        } else {
+          processMaterial(node.material, node.name);
+        }
       }
     });
+    if (!screenMeshFound) {
+      console.warn('Aucun mesh "Display.001" trouvé : l\'image d\'écran ne peut pas être appliquée. Noms de mesh disponibles :',
+        (() => { const names = []; gltf.scene.traverse((n) => { if (n.isMesh) names.push(n.name); }); return names; })()
+      );
+    }
 
     state.screenHinge = null;
     let appleLogo = null;

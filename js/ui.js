@@ -1,4 +1,5 @@
 /* ——————————————————— UI & COMPOSANTS INTERACTIFS DOM ——————————————————— */
+import { setScreenWallpaper, defaultWallpaper, gameWallpaper } from "./materials.js";
 
 /**
  * Initialise l'horloge, le filtrage du dock et le sélecteur de langue.
@@ -84,6 +85,15 @@ export function initUI() {
     homeBtn.addEventListener("click", () => {
       dockItemsList.forEach(dockItem => showDockItem(dockItem));
     });
+  }
+
+  /* ——————————————————— WALLPAPER ÉCRAN AU SURVOL "JEUX VIDÉO" ——————————————————— */
+  // Cible précisément le bouton "JEUX VIDÉO (UE5)" (data-fr sert d'identifiant stable,
+  // indépendant de la langue actuellement affichée).
+  const jeuxVideoBtn = document.querySelector('.dockitem[data-fr="JEUX VIDÉO (UE5)"]');
+  if (jeuxVideoBtn) {
+    jeuxVideoBtn.addEventListener("mouseenter", () => setScreenWallpaper(gameWallpaper));
+    jeuxVideoBtn.addEventListener("mouseleave", () => setScreenWallpaper(defaultWallpaper));
   }
 
   // Gestion des Langues

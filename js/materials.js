@@ -1,72 +1,108 @@
 import * as THREE from "three";
 import { maxAnisotropy } from "./scene-setup.js";
 
-/* ——————————————————— TEXTURE D'ÉCRAN (fond d'écran "vague de particules") ——————————————————— */
-export function createScreenWallpaperTexture() {
-  const w = 1024, h = 640;
-  const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext("2d");
+/* ——————————————————— TEXTURES D'ÉCRAN (images réelles) ——————————————————— */
+const textureLoader = new THREE.TextureLoader();
 
-  // Fond très sombre, légèrement dégradé
-  const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
-  bgGrad.addColorStop(0, "#0c0e13");
-  bgGrad.addColorStop(1, "#05060a");
-  ctx.fillStyle = bgGrad;
-  ctx.fillRect(0, 0, w, h);
+// La vraie dalle LCD est le mesh "Display.001". Dans le fichier source, elle
+// partage le matériau alu du châssis ("GreyMetalic.002") et n'occupe qu'une
+// sous-région du UV 0-1 (mesurée directement dans le .gltf), pas tout l'espace.
+// Sans ce recalage, l'image se retrouverait recadrée sur cette petite zone
+// centrale au lieu de remplir toute la dalle.
+const SCREEN_UV = { uMin: 0.1892, uMax: 0.8125, vMin: 0.2091, vMax: 0.7341 };
+// Ratio largeur/hauteur réel de la dalle, mesuré sur la géométrie (≈ 1.52:1)
+const SCREEN_ASPECT = 1.523;
 
-  // Grille de points formant des vagues (effet "topographie / data wave")
-  const cols = 70, rows = 36;
-  const marginX = w * 0.04, marginY = h * 0.12;
-  const spanX = w - marginX * 2, spanY = h - marginY * 2;
+// Combine un recadrage façon "background-size: cover" (pour ne pas déformer une
+// image 16:9 sur une dalle ≈1.52:1) ET le recalage vers la sous-région UV réelle.
+function fitTextureToScreen(texture) {
+  const img = texture.image;
+  if (!img) return;
 
-  for (let row = 0; row < rows; row++) {
-    ctx.beginPath();
-    let first = true;
-    for (let col = 0; col <= cols; col++) {
-      const u = col / cols;
-      const v = row / (rows - 1);
-      const x = marginX + u * spanX;
+  const uSpan = SCREEN_UV.uMax - SCREEN_UV.uMin;
+  const vSpan = SCREEN_UV.vMax - SCREEN_UV.vMin;
+  const imageAspect = img.width / img.height;
 
-      const wave =
-        Math.sin(u * 9.5 + v * 2.2) * 22 * (0.4 + v) +
-        Math.sin(u * 4.0 - v * 5.0) * 14 * (1 - v * 0.5) +
-        Math.cos(u * 14.0 + v * 1.5) * 6;
-
-      const y = marginY + v * spanY + wave;
-
-      if (first) { ctx.moveTo(x, y); first = false; }
-      else ctx.lineTo(x, y);
-
-      // Points lumineux ponctuels
-      const brightness = 0.15 + Math.max(0, Math.sin(u * 9.5 + v * 2.2)) * 0.55;
-      if (col % 2 === 0) {
-        ctx.fillStyle = `rgba(210,220,235,${brightness.toFixed(2)})`;
-        ctx.beginPath();
-        ctx.arc(x, y, 1.15, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-    ctx.strokeStyle = `rgba(170,185,210,${(0.05 + row / rows * 0.10).toFixed(2)})`;
-    ctx.lineWidth = 1;
-    ctx.stroke();
+  let coverRepeatX = 1, coverRepeatY = 1, coverOffsetX = 0, coverOffsetY = 0;
+  if (imageAspect > SCREEN_ASPECT) {
+    coverRepeatX = SCREEN_ASPECT / imageAspect;
+    coverOffsetX = (1 - coverRepeatX) / 2;
+  } else {
+    coverRepeatY = imageAspect / SCREEN_ASPECT;
+    coverOffsetY = (1 - coverRepeatY) / 2;
   }
 
-  // Vignette douce
-  const vignette = ctx.createRadialGradient(w/2, h/2, h*0.1, w/2, h/2, h*0.85);
-  vignette.addColorStop(0, "rgba(0,0,0,0)");
-  vignette.addColorStop(1, "rgba(0,0,0,0.55)");
-  ctx.fillStyle = vignette;
-  ctx.fillRect(0, 0, w, h);
+  texture.repeat.set(coverRepeatX / uSpan, coverRepeatY / vSpan);
+  texture.offset.set(
+    coverOffsetX - (SCREEN_UV.uMin / uSpan) * coverRepeatX,
+    coverOffsetY - (SCREEN_UV.vMin / vSpan) * coverRepeatY
+  );
 
-  const texture = new THREE.CanvasTexture(canvas);
+  // Le modèle (export Blender) a l'UV de la dalle inversé verticalement :
+  // l'image apparaissait tête en bas. On retourne donc uniquement cet axe.
+  texture.offset.y += texture.repeat.y;
+  texture.repeat.y *= -1;
+
+  texture.needsUpdate = true;
+}
+
+function loadWallpaperTexture(path) {
+  const texture = textureLoader.load(
+    path,
+    (tex) => {
+      tex.anisotropy = maxAnisotropy;
+      fitTextureToScreen(tex);
+    },
+    undefined,
+    (err) => {
+      console.error(`Impossible de charger l'image d'écran "${path}". Vérifie qu'elle est bien présente à cet emplacement.`, err);
+    }
+  );
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.flipY = true;
+  texture.generateMipmaps = true;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.magFilter = THREE.LinearFilter;
   return texture;
 }
 
-export const screenWallpaper = createScreenWallpaperTexture();
+// Fond d'écran par défaut (affiché au chargement + quand la souris quitte "JEUX VIDÉO")
+export const defaultWallpaper = loadWallpaperTexture("model/2D/Wallpaper_-_spes_-_home.png");
+// Fond d'écran affiché au survol du bouton "JEUX VIDÉO (UE5)"
+export const gameWallpaper = loadWallpaperTexture("model/2D/Foxy_game.png");
+
+// Référence(s) vers le matériau dédié de la dalle (clone, voir setupScreenMaterial),
+// pour pouvoir changer l'image affichée à la volée (survol dock).
+export const screenMaterials = [];
+
+/**
+ * Change l'image affichée sur l'écran du laptop.
+ * @param {THREE.Texture} texture
+ */
+export function setScreenWallpaper(texture) {
+  screenMaterials.forEach((mat) => {
+    mat.emissiveMap = texture;
+    mat.needsUpdate = true;
+  });
+}
+
+/**
+ * Configure le matériau CLONÉ de la dalle LCD (mesh "Display.001").
+ * Ce clone est nécessaire car ce mesh partage par défaut le même matériau que
+ * le châssis alu — sans clone, le modifier affecterait aussi le reste de la coque.
+ * À appeler depuis model-loader.js avec le matériau déjà cloné pour ce mesh.
+ */
+export function setupScreenMaterial(mat) {
+  mat.color = new THREE.Color(0x000000);
+  mat.emissive = new THREE.Color(0xffffff);
+  mat.emissiveMap = defaultWallpaper;
+  mat.emissiveIntensity = 1.0;
+  mat.roughness = 0.05;
+  mat.metalness = 0.0;
+  mat.map = null; // évite que la texture alu du châssis transparaisse sous l'image
+  mat.needsUpdate = true;
+  screenMaterials.push(mat);
+}
 
 /* ——————————————————— TRAITEMENT DES MATÉRIAUX ——————————————————— */
 export function processMaterial(material, meshName) {
@@ -88,14 +124,13 @@ export function processMaterial(material, meshName) {
       tex.needsUpdate = true;
     });
 
-    // L'écran LCD lui-même (matériau "Bezel.003" dans le modèle, malgré son nom)
+    // Contour/rebord autour de la dalle (matériau "Bezel.003" dans le modèle).
+    // La vraie dalle LCD est gérée séparément par setupScreenMaterial() dans
+    // model-loader.js (mesh "Display.001"), pas ici.
     if (name.includes("bezel")) {
-      mat.color = new THREE.Color(0x000000);
-      mat.emissive = new THREE.Color(0xffffff);
-      mat.emissiveMap = screenWallpaper;
-      mat.emissiveIntensity = 1.0;
-      mat.roughness = 0.05;
-      mat.metalness = 0.0;
+      mat.color = new THREE.Color(0x05060a);
+      mat.roughness = 0.35;
+      mat.metalness = 0.1;
       mat.needsUpdate = true;
       return;
     }

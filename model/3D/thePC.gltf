@@ -14,7 +14,7 @@
 		{
 			"name":"Scene",
 			"nodes":[
-				16
+				17
 			]
 		}
 	],
@@ -75,6 +75,21 @@
 		},
 		{
 			"mesh":6,
+			"name":"Display.001",
+			"rotation":[
+				0,
+				-0.7071068286895752,
+				0,
+				0.7071068286895752
+			],
+			"translation":[
+				-0.10795034468173981,
+				0.00864408165216446,
+				0
+			]
+		},
+		{
+			"mesh":7,
 			"name":"Apple-Logo-Iconic-Tech-Brand-Symbol-PNG-Transparent-Representa",
 			"translation":[
 				-0.0006258534267544746,
@@ -84,9 +99,9 @@
 		},
 		{
 			"children":[
-				6
+				7
 			],
-			"mesh":7,
+			"mesh":8,
 			"name":"Display.002",
 			"rotation":[
 				0,
@@ -101,7 +116,7 @@
 			]
 		},
 		{
-			"mesh":8,
+			"mesh":9,
 			"name":"Screengasket.002",
 			"rotation":[
 				0,
@@ -117,8 +132,9 @@
 		},
 		{
 			"children":[
-				7,
-				8
+				6,
+				8,
+				9
 			],
 			"name":"Rotate Screen.001",
 			"rotation":[
@@ -134,7 +150,7 @@
 			]
 		},
 		{
-			"mesh":9,
+			"mesh":10,
 			"name":"Solid 428.002",
 			"translation":[
 				0,
@@ -143,7 +159,7 @@
 			]
 		},
 		{
-			"mesh":10,
+			"mesh":11,
 			"name":"Solid 430.002",
 			"translation":[
 				0,
@@ -152,7 +168,7 @@
 			]
 		},
 		{
-			"mesh":11,
+			"mesh":12,
 			"name":"Solid 432.002",
 			"translation":[
 				0,
@@ -161,7 +177,7 @@
 			]
 		},
 		{
-			"mesh":12,
+			"mesh":13,
 			"name":"Solid 514.002",
 			"translation":[
 				0,
@@ -170,7 +186,7 @@
 			]
 		},
 		{
-			"mesh":13,
+			"mesh":14,
 			"name":"Solid 515.002",
 			"translation":[
 				0,
@@ -179,7 +195,7 @@
 			]
 		},
 		{
-			"mesh":14,
+			"mesh":15,
 			"name":"Trackpad.002",
 			"translation":[
 				0,
@@ -195,13 +211,13 @@
 				3,
 				4,
 				5,
-				9,
 				10,
 				11,
 				12,
 				13,
 				14,
-				15
+				15,
+				16
 			],
 			"name":"Macbook Pro 14 inch 2024"
 		}
@@ -439,7 +455,7 @@
 			]
 		},
 		{
-			"name":"Apple-Logo-Iconic-Tech-Brand-Symbol-PNG-Transparent-Representa",
+			"name":"Display.001",
 			"primitives":[
 				{
 					"attributes":{
@@ -448,6 +464,20 @@
 						"TEXCOORD_0":27
 					},
 					"indices":28,
+					"material":0
+				}
+			]
+		},
+		{
+			"name":"Apple-Logo-Iconic-Tech-Brand-Symbol-PNG-Transparent-Representa",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":29,
+						"NORMAL":30,
+						"TEXCOORD_0":31
+					},
+					"indices":32,
 					"material":6
 				}
 			]
@@ -457,20 +487,20 @@
 			"primitives":[
 				{
 					"attributes":{
-						"POSITION":29,
-						"NORMAL":30,
-						"TEXCOORD_0":31
-					},
-					"indices":32,
-					"material":0
-				},
-				{
-					"attributes":{
 						"POSITION":33,
 						"NORMAL":34,
 						"TEXCOORD_0":35
 					},
 					"indices":36,
+					"material":0
+				},
+				{
+					"attributes":{
+						"POSITION":37,
+						"NORMAL":38,
+						"TEXCOORD_0":39
+					},
+					"indices":40,
 					"material":7
 				}
 			]
@@ -480,42 +510,16 @@
 			"primitives":[
 				{
 					"attributes":{
-						"POSITION":37,
-						"NORMAL":38
+						"POSITION":41,
+						"NORMAL":42
 					},
-					"indices":39,
+					"indices":43,
 					"material":5
 				}
 			]
 		},
 		{
 			"name":"Solid 428.002",
-			"primitives":[
-				{
-					"attributes":{
-						"POSITION":40,
-						"NORMAL":41
-					},
-					"indices":24,
-					"material":5
-				}
-			]
-		},
-		{
-			"name":"Solid 430.002",
-			"primitives":[
-				{
-					"attributes":{
-						"POSITION":42,
-						"NORMAL":43
-					},
-					"indices":24,
-					"material":5
-				}
-			]
-		},
-		{
-			"name":"Solid 432.002",
 			"primitives":[
 				{
 					"attributes":{
@@ -528,14 +532,40 @@
 			]
 		},
 		{
-			"name":"Solid 514.002",
+			"name":"Solid 430.002",
 			"primitives":[
 				{
 					"attributes":{
 						"POSITION":46,
 						"NORMAL":47
 					},
-					"indices":48,
+					"indices":24,
+					"material":5
+				}
+			]
+		},
+		{
+			"name":"Solid 432.002",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":48,
+						"NORMAL":49
+					},
+					"indices":24,
+					"material":5
+				}
+			]
+		},
+		{
+			"name":"Solid 514.002",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":50,
+						"NORMAL":51
+					},
+					"indices":52,
 					"material":0
 				}
 			]
@@ -545,10 +575,10 @@
 			"primitives":[
 				{
 					"attributes":{
-						"POSITION":49,
-						"NORMAL":50
+						"POSITION":53,
+						"NORMAL":54
 					},
-					"indices":51,
+					"indices":55,
 					"material":0
 				}
 			]
@@ -558,10 +588,10 @@
 			"primitives":[
 				{
 					"attributes":{
-						"POSITION":52,
-						"NORMAL":53
+						"POSITION":56,
+						"NORMAL":57
 					},
-					"indices":54,
+					"indices":58,
 					"material":0
 				}
 			]
@@ -585,8 +615,8 @@
 		},
 		{
 			"mimeType":"image/png",
-			"name":"AppleLogo",
-			"uri":"AppleLogo.png"
+			"name":"Apple-Logo-Iconic-Tech-Brand-Symbol-PNG-Transparent-Representation-of-Innovation-and-Design",
+			"uri":"Apple-Logo-Iconic-Tech-Brand-Symbol-PNG-Transparent-Representation-of-Innovation-and-Design.png"
 		}
 	],
 	"accessors":[
@@ -823,6 +853,40 @@
 		{
 			"bufferView":25,
 			"componentType":5126,
+			"count":43,
+			"max":[
+				0.14980000257492065,
+				0.20335349440574646,
+				-0.11218320578336716
+			],
+			"min":[
+				-0.14980000257492065,
+				0.006562500726431608,
+				-0.11218320578336716
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":26,
+			"componentType":5126,
+			"count":43,
+			"type":"VEC3"
+		},
+		{
+			"bufferView":27,
+			"componentType":5126,
+			"count":43,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":28,
+			"componentType":5123,
+			"count":123,
+			"type":"SCALAR"
+		},
+		{
+			"bufferView":29,
+			"componentType":5126,
 			"count":4,
 			"max":[
 				0.025416959077119827,
@@ -837,27 +901,27 @@
 			"type":"VEC3"
 		},
 		{
-			"bufferView":26,
+			"bufferView":30,
 			"componentType":5126,
 			"count":4,
 			"type":"VEC3"
 		},
 		{
-			"bufferView":27,
+			"bufferView":31,
 			"componentType":5126,
 			"count":4,
 			"type":"VEC2"
 		},
 		{
-			"bufferView":28,
+			"bufferView":32,
 			"componentType":5123,
 			"count":6,
 			"type":"SCALAR"
 		},
 		{
-			"bufferView":29,
+			"bufferView":33,
 			"componentType":5126,
-			"count":1803,
+			"count":1769,
 			"max":[
 				0.15629999339580536,
 				0.20985348522663116,
@@ -871,25 +935,25 @@
 			"type":"VEC3"
 		},
 		{
-			"bufferView":30,
+			"bufferView":34,
 			"componentType":5126,
-			"count":1803,
+			"count":1769,
 			"type":"VEC3"
 		},
 		{
-			"bufferView":31,
+			"bufferView":35,
 			"componentType":5126,
-			"count":1803,
+			"count":1769,
 			"type":"VEC2"
 		},
 		{
-			"bufferView":32,
+			"bufferView":36,
 			"componentType":5123,
-			"count":6531,
+			"count":6408,
 			"type":"SCALAR"
 		},
 		{
-			"bufferView":33,
+			"bufferView":37,
 			"componentType":5126,
 			"count":87,
 			"max":[
@@ -905,25 +969,25 @@
 			"type":"VEC3"
 		},
 		{
-			"bufferView":34,
+			"bufferView":38,
 			"componentType":5126,
 			"count":87,
 			"type":"VEC3"
 		},
 		{
-			"bufferView":35,
+			"bufferView":39,
 			"componentType":5126,
 			"count":87,
 			"type":"VEC2"
 		},
 		{
-			"bufferView":36,
+			"bufferView":40,
 			"componentType":5123,
 			"count":261,
 			"type":"SCALAR"
 		},
 		{
-			"bufferView":37,
+			"bufferView":41,
 			"componentType":5126,
 			"count":2376,
 			"max":[
@@ -939,19 +1003,19 @@
 			"type":"VEC3"
 		},
 		{
-			"bufferView":38,
+			"bufferView":42,
 			"componentType":5126,
 			"count":2376,
 			"type":"VEC3"
 		},
 		{
-			"bufferView":39,
+			"bufferView":43,
 			"componentType":5123,
 			"count":11736,
 			"type":"SCALAR"
 		},
 		{
-			"bufferView":40,
+			"bufferView":44,
 			"componentType":5126,
 			"count":674,
 			"max":[
@@ -967,13 +1031,13 @@
 			"type":"VEC3"
 		},
 		{
-			"bufferView":41,
+			"bufferView":45,
 			"componentType":5126,
 			"count":674,
 			"type":"VEC3"
 		},
 		{
-			"bufferView":42,
+			"bufferView":46,
 			"componentType":5126,
 			"count":674,
 			"max":[
@@ -989,13 +1053,13 @@
 			"type":"VEC3"
 		},
 		{
-			"bufferView":43,
+			"bufferView":47,
 			"componentType":5126,
 			"count":674,
 			"type":"VEC3"
 		},
 		{
-			"bufferView":44,
+			"bufferView":48,
 			"componentType":5126,
 			"count":674,
 			"max":[
@@ -1011,13 +1075,13 @@
 			"type":"VEC3"
 		},
 		{
-			"bufferView":45,
+			"bufferView":49,
 			"componentType":5126,
 			"count":674,
 			"type":"VEC3"
 		},
 		{
-			"bufferView":46,
+			"bufferView":50,
 			"componentType":5126,
 			"count":100,
 			"max":[
@@ -1033,19 +1097,19 @@
 			"type":"VEC3"
 		},
 		{
-			"bufferView":47,
+			"bufferView":51,
 			"componentType":5126,
 			"count":100,
 			"type":"VEC3"
 		},
 		{
-			"bufferView":48,
+			"bufferView":52,
 			"componentType":5123,
 			"count":252,
 			"type":"SCALAR"
 		},
 		{
-			"bufferView":49,
+			"bufferView":53,
 			"componentType":5126,
 			"count":100,
 			"max":[
@@ -1061,19 +1125,19 @@
 			"type":"VEC3"
 		},
 		{
-			"bufferView":50,
+			"bufferView":54,
 			"componentType":5126,
 			"count":100,
 			"type":"VEC3"
 		},
 		{
-			"bufferView":51,
+			"bufferView":55,
 			"componentType":5123,
 			"count":252,
 			"type":"SCALAR"
 		},
 		{
-			"bufferView":52,
+			"bufferView":56,
 			"componentType":5126,
 			"count":381,
 			"max":[
@@ -1089,13 +1153,13 @@
 			"type":"VEC3"
 		},
 		{
-			"bufferView":53,
+			"bufferView":57,
 			"componentType":5126,
 			"count":381,
 			"type":"VEC3"
 		},
 		{
-			"bufferView":54,
+			"bufferView":58,
 			"componentType":5123,
 			"count":1404,
 			"type":"SCALAR"
@@ -1254,182 +1318,206 @@
 		},
 		{
 			"buffer":0,
-			"byteLength":48,
+			"byteLength":516,
 			"byteOffset":15318140,
 			"target":34962
 		},
 		{
 			"buffer":0,
+			"byteLength":516,
+			"byteOffset":15318656,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":344,
+			"byteOffset":15319172,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":246,
+			"byteOffset":15319516,
+			"target":34963
+		},
+		{
+			"buffer":0,
 			"byteLength":48,
-			"byteOffset":15318188,
+			"byteOffset":15319764,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":48,
+			"byteOffset":15319812,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":32,
-			"byteOffset":15318236,
+			"byteOffset":15319860,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":12,
-			"byteOffset":15318268,
+			"byteOffset":15319892,
 			"target":34963
 		},
 		{
 			"buffer":0,
-			"byteLength":21636,
-			"byteOffset":15318280,
+			"byteLength":21228,
+			"byteOffset":15319904,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":21636,
-			"byteOffset":15339916,
+			"byteLength":21228,
+			"byteOffset":15341132,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":14424,
-			"byteOffset":15361552,
+			"byteLength":14152,
+			"byteOffset":15362360,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":13062,
-			"byteOffset":15375976,
+			"byteLength":12816,
+			"byteOffset":15376512,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":1044,
-			"byteOffset":15389040,
+			"byteOffset":15389328,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":1044,
-			"byteOffset":15390084,
+			"byteOffset":15390372,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":696,
-			"byteOffset":15391128,
+			"byteOffset":15391416,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":522,
-			"byteOffset":15391824,
+			"byteOffset":15392112,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":28512,
-			"byteOffset":15392348,
+			"byteOffset":15392636,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":28512,
-			"byteOffset":15420860,
+			"byteOffset":15421148,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":23472,
-			"byteOffset":15449372,
+			"byteOffset":15449660,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":8088,
-			"byteOffset":15472844,
+			"byteOffset":15473132,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":8088,
-			"byteOffset":15480932,
+			"byteOffset":15481220,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":8088,
-			"byteOffset":15489020,
+			"byteOffset":15489308,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":8088,
-			"byteOffset":15497108,
+			"byteOffset":15497396,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":8088,
-			"byteOffset":15505196,
+			"byteOffset":15505484,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":8088,
-			"byteOffset":15513284,
+			"byteOffset":15513572,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":1200,
-			"byteOffset":15521372,
+			"byteOffset":15521660,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":1200,
-			"byteOffset":15522572,
+			"byteOffset":15522860,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":504,
-			"byteOffset":15523772,
+			"byteOffset":15524060,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":1200,
-			"byteOffset":15524276,
+			"byteOffset":15524564,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":1200,
-			"byteOffset":15525476,
+			"byteOffset":15525764,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":504,
-			"byteOffset":15526676,
+			"byteOffset":15526964,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":4572,
-			"byteOffset":15527180,
+			"byteOffset":15527468,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":4572,
-			"byteOffset":15531752,
+			"byteOffset":15532040,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":2808,
-			"byteOffset":15536324,
+			"byteOffset":15536612,
 			"target":34963
 		}
 	],
@@ -1447,7 +1535,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":15539132,
+			"byteLength":15539420,
 			"uri":"thePC.bin"
 		}
 	]
