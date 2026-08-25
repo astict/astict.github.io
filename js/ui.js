@@ -87,10 +87,8 @@ export function initUI() {
     });
   }
 
-  /* ——————————————————— WALLPAPER ÉCRAN AU SURVOL "JEUX VIDÉO" ——————————————————— */
-  // Cible précisément le bouton "JEUX VIDÉO (UE5)" (data-fr sert d'identifiant stable,
-  // indépendant de la langue actuellement affichée).
-  const jeuxVideoBtn = document.querySelector('.dockitem[data-fr="JEUX VIDÉO (UE5)"]');
+  /* ——————————————————— WALLPAPER ÉCRAN AU SURVOL "FOXY" ——————————————————— */
+  const jeuxVideoBtn = document.querySelector('.dockitem[data-fr="FOXY"]');
   if (jeuxVideoBtn) {
     jeuxVideoBtn.addEventListener("mouseenter", () => setScreenWallpaper(gameWallpaper));
     jeuxVideoBtn.addEventListener("mouseleave", () => setScreenWallpaper(defaultWallpaper));

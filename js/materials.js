@@ -11,7 +11,7 @@ const textureLoader = new THREE.TextureLoader();
 // centrale au lieu de remplir toute la dalle.
 const SCREEN_UV = { uMin: 0.2102, uMax: 0.7800, vMin: 0.2700, vMax: 0.7900 };
 // Ratio largeur/hauteur réel de la dalle, mesuré sur la géométrie (≈ 1.52:1)
-const SCREEN_ASPECT = 1.523;
+const SCREEN_ASPECT = 1.50;
 
 // Combine un recadrage façon "background-size: cover" (pour ne pas déformer une
 // image 16:9 sur une dalle ≈1.52:1) ET le recalage vers la sous-région UV réelle.
@@ -66,9 +66,9 @@ function loadWallpaperTexture(path) {
   return texture;
 }
 
-// Fond d'écran par défaut (affiché au chargement + quand la souris quitte "JEUX VIDÉO")
+// Fond d'écran par défaut (affiché au chargement + quand la souris quitte "FOXY")
 export const defaultWallpaper = loadWallpaperTexture("model/2D/Wallpaper_-_spes_-_home.png");
-// Fond d'écran affiché au survol du bouton "JEUX VIDÉO (UE5)"
+// Fond d'écran affiché au survol du bouton "FOXY"
 export const gameWallpaper = loadWallpaperTexture("model/2D/Foxy_game.png");
 
 // Référence(s) vers le matériau dédié de la dalle (clone, voir setupScreenMaterial),
