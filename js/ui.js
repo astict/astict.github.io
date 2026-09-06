@@ -129,10 +129,10 @@ export function initUI() {
   const loaderLabel = document.getElementById("loaderLabel");
 
   const translations = {
-    fr: { role: "ÉTUDIANT", status: "DISPONIBLE" },
-    en: { role: "STUDENT",   status: "AVAILABLE"  },
-    es: { role: "ESTUDIANTE", status: "DISPONIBLE" },
-    sv: { role: "STUDENT", status: "TILLGÄNGLIG" }
+    fr: { role: "ÉTUDIANT", status: "🚧 SITE EN CONSTRUCTION" },
+    en: { role: "STUDENT",   status: "🚧 WEBSITE UNDER CONSTRUCTION"  },
+    es: { role: "ESTUDIANTE", status: "🚧 SITIO EN CONSTRUCCIÓN" },
+    sv: { role: "STUDENT", status: "🚧 WEBBPLATS UNDER UPPMYNANDE" }
   };
 
   langBtn.addEventListener("click", (e) => {
