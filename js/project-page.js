@@ -12,8 +12,8 @@ import { easeInOutCubic } from "./model-loader.js";
    referme la page et ramène la caméra à son cadrage d'origine.
    ——————————————————————————————————————————————————————————— */
 
-const ZOOM_DURATION = 0.9;     // secondes, aligné sur pcLidAnimDuration pour rester cohérent
-const ZOOM_DISTANCE = 0.045;   // distance caméra ↔ dalle une fois "à l'intérieur" de l'écran
+const ZOOM_DURATION = 0.8;     // secondes, aligné sur pcLidAnimDuration pour rester cohérent
+const ZOOM_DISTANCE = 0.025;   // distance caméra ↔ dalle une fois "à l'intérieur" de l'écran
 
 const uiFadeTargets = document.querySelectorAll(
   "#header, #dock, #cornerTools, #clock, .rail, #hint"
@@ -24,9 +24,13 @@ let restore = null;
 
 function getScreenWorldPosition(fallback) {
   if (!state.screenMesh) return fallback.clone();
-  const pos = new THREE.Vector3();
-  state.screenMesh.getWorldPosition(pos);
-  return pos;
+  // getWorldPosition() renvoie l'origine locale du mesh, qui n'est pas forcément
+  // son centre visuel (pivot d'export Blender arbitraire) — d'où un zoom qui
+  // atterrissait plus bas, vers le clavier. On vise plutôt le centre de sa
+  // bounding box monde, qui correspond au centre réel de la dalle affichée.
+  const box = new THREE.Box3().setFromObject(state.screenMesh);
+  if (box.isEmpty()) return fallback.clone();
+  return box.getCenter(new THREE.Vector3());
 }
 
 function setUIHidden(hidden) {
@@ -58,7 +62,7 @@ export function openProjectPage(key) {
 
   state.zooming = true;
   setUIHidden(true);
-  document.body.classList.add("zooming-in");
+  page.setAttribute("aria-hidden", "false");
 
   state.zoomTween = {
     startTime: state.elapsedTime,
@@ -68,7 +72,6 @@ export function openProjectPage(key) {
     fromLook,
     toLook: screenPos.clone(),
     onComplete: () => {
-      document.body.classList.remove("zooming-in");
       page.classList.add("open");
     }
   };
@@ -78,7 +81,10 @@ export function openProjectPage(key) {
 export function closeProjectPage() {
   if (!restore) return;
   const page = getPage(restore.key);
-  if (page) page.classList.remove("open");
+  if (page) {
+    page.classList.remove("open");
+    page.setAttribute("aria-hidden", "true");
+  }
 
   const fallbackLook = new THREE.Vector3(state.camCenter.x, state.camLookY, state.camCenter.z);
   const screenPos = getScreenWorldPosition(fallbackLook);

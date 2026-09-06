@@ -87,12 +87,37 @@ export function initUI() {
     });
   }
 
-  /* ——————————————————— WALLPAPER ÉCRAN AU SURVOL "FOXY" ——————————————————— */
-  const jeuxVideoBtn = document.querySelector('.dockitem[data-fr="FOXY"]');
-  if (jeuxVideoBtn) {
-    jeuxVideoBtn.addEventListener("mouseenter", () => setScreenWallpaper(gameWallpaper));
-    jeuxVideoBtn.addEventListener("mouseleave", () => setScreenWallpaper(defaultWallpaper));
+  /* ——————————————————— WALLPAPER ÉCRAN AU SURVOL / CLIC ——————————————————— */
+  // Associe chaque item du dock ayant une page projet (data-project) à un fond
+  // d'écran dédié. Au clic, ce fond reste "épinglé" tant que l'utilisateur ne
+  // survole pas un autre item du dock — à ce moment-là seulement l'épingle
+  // saute, et l'écran redevient un simple aperçu au survol (comportement normal).
+  const wallpaperByProject = { foxy: gameWallpaper };
+  let pinnedKey = null;
+
+  function wallpaperFor(key) {
+    return (key && wallpaperByProject[key]) || defaultWallpaper;
   }
+
+  dockItemsList.forEach((item) => {
+    const key = item.getAttribute("data-project");
+
+    item.addEventListener("mouseenter", () => {
+      if (key !== pinnedKey) pinnedKey = null; // survol d'une autre catégorie : on désépingle
+      setScreenWallpaper(wallpaperFor(key));
+    });
+
+    item.addEventListener("mouseleave", () => {
+      setScreenWallpaper(wallpaperFor(pinnedKey));
+    });
+
+    item.addEventListener("click", () => {
+      if (key) {
+        pinnedKey = key;
+        setScreenWallpaper(wallpaperFor(key));
+      }
+    });
+  });
 
   // Gestion des Langues
   const langBtn = document.getElementById("langBtn");

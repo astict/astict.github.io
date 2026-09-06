@@ -70,6 +70,7 @@ export function animate() {
     camera.position.lerpVectors(zt.fromPos, zt.toPos, e);
     const lookAt = new THREE.Vector3().lerpVectors(zt.fromLook, zt.toLook, e);
     camera.lookAt(lookAt);
+    if (zt.onUpdate) zt.onUpdate(e, t);
     if (t >= 1) {
       const onComplete = zt.onComplete;
       state.zoomTween = null;
