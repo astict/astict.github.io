@@ -1,0 +1,170 @@
+/* ===================== PAGE PROJET (overlay "à l'intérieur de l'écran") =====================
+   Palette volontairement distincte du rig 3D (papier clair / encre foncée) : une fois qu'on est
+   "entré" dans l'écran du laptop, on quitte le registre nuit/navy pour un registre lecture, posé.
+   L'ouverture/fermeture est pilotée en JS (classe .open) en coordination avec le dolly caméra
+   dans project-page.js — la transition CSS ci-dessous prend le relais visuellement une fois
+   la caméra arrivée tout près de la dalle. */
+
+.project-page {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: #eceef4;
+  color: #14161f;
+  visibility: hidden;
+  opacity: 0;
+  transform: scale(0.94);
+  transform-origin: 50% 50%;
+  pointer-events: none;
+  overflow: hidden;
+  transition:
+    opacity .5s cubic-bezier(.22,1,.36,1),
+    transform .5s cubic-bezier(.22,1,.36,1),
+    visibility 0s linear .5s;
+}
+
+.project-page.open {
+  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+  transition:
+    opacity .5s cubic-bezier(.22,1,.36,1),
+    transform .5s cubic-bezier(.22,1,.36,1),
+    visibility 0s linear 0s;
+}
+
+.project-page__close {
+  position: fixed;
+  top: 28px;
+  left: 28px;
+  z-index: 2;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid rgba(20,22,31,0.25);
+  border-radius: 4px;
+  color: #14161f;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.project-page__close:hover {
+  border-color: rgba(20,22,31,0.6);
+  background: rgba(20,22,31,0.05);
+  transform: rotate(90deg);
+}
+
+.project-page__close svg { width: 15px; height: 15px; }
+
+.project-page__scroll {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.project-page__content {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 120px 24px 120px;
+}
+
+.project-page__header h1 {
+  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  line-height: 1.1;
+}
+
+.project-page__meta {
+  margin-top: 10px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.6px;
+  color: var(--accent);
+}
+
+.project-page__lead {
+  margin-top: 32px;
+  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  font-size: 18px;
+  line-height: 1.65;
+  color: #2b2e3a;
+}
+
+.project-page__figure {
+  margin: 44px 0;
+}
+
+.project-page__placeholder-visual {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(20,22,31,0.06),
+    rgba(20,22,31,0.06) 10px,
+    rgba(20,22,31,0.03) 10px,
+    rgba(20,22,31,0.03) 20px
+  );
+  border: 1px dashed rgba(20,22,31,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  color: rgba(20,22,31,0.45);
+  text-align: center;
+}
+
+.project-page__figure figcaption {
+  margin-top: 10px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.4px;
+  color: rgba(20,22,31,0.45);
+}
+
+.project-page__content h2 {
+  margin-top: 48px;
+  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.project-page__content > p {
+  margin-top: 16px;
+  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #2b2e3a;
+}
+
+/* ——— Habillage : masquer le chrome 3D (header/dock/rails/horloge/outils/hint)
+   pendant le zoom et tant qu'une page projet est ouverte ——— */
+#header.ui-hidden,
+#dock.ui-hidden,
+#cornerTools.ui-hidden,
+#clock.ui-hidden,
+.rail.ui-hidden,
+#hint.ui-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s ease;
+}
+
+@media (max-width: 760px) {
+  .project-page__content { padding: 100px 20px 100px; }
+  .project-page__header h1 { font-size: 30px; }
+  .project-page__lead { font-size: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-page,
+  .project-page.open,
+  .project-page__close { transition: none; }
+}

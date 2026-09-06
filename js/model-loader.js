@@ -99,6 +99,7 @@ export function loadModels() {
         const sanitized = (node.name || "").toLowerCase().replace(/[^a-z0-9]/g, "");
         if (sanitized === "display001") {
           screenMeshFound = true;
+          state.screenMesh = node;
           const sharedMat = Array.isArray(node.material) ? node.material[0] : node.material;
           const screenMat = sharedMat.clone();
           node.material = screenMat;

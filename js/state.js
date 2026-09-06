@@ -24,6 +24,17 @@ export const state = {
   hingeTween: null,
   elapsedTime: 0,
 
+  // Référence vers le mesh de la dalle LCD ("Display.001"), utilisée pour
+  // viser précisément l'écran lors du zoom caméra vers une page projet.
+  screenMesh: null,
+
+  // Zoom caméra "on rentre dans l'écran" (voir project-page.js).
+  // Pendant que `zooming` est vrai, la boucle d'animation (interaction.js)
+  // n'applique plus le parallax souris/tactile, pour laisser project-page.js
+  // piloter seul la caméra via `zoomTween`.
+  zooming: false,
+  zoomTween: null,
+
   // Cadrage caméra (voir framing.js -> frameRig)
   baseCamDistance: 1,
   camCenter: new THREE.Vector3(),

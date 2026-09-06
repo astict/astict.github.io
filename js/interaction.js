@@ -60,16 +60,33 @@ export function animate() {
   const delta = Math.min(clock.getDelta(), 0.1);
   state.elapsedTime += delta;
 
-  const k = 1 - Math.exp(-CONFIG.followSpeed * delta);
-  state.currentNX += (state.targetNX - state.currentNX) * k;
-  state.currentNY += (state.targetNY - state.currentNY) * k;
+  // FIX zoom écran : pendant l'entrée/sortie de la page projet (voir project-page.js),
+  // c'est le zoomTween qui pilote seul la position/orientation de la caméra —
+  // le parallax souris/tactile et le rig ne doivent plus bouger la caméra pendant ce temps.
+  if (state.zoomTween) {
+    const zt = state.zoomTween;
+    const t = Math.min((state.elapsedTime - zt.startTime) / zt.duration, 1);
+    const e = easeInOutCubic(t);
+    camera.position.lerpVectors(zt.fromPos, zt.toPos, e);
+    const lookAt = new THREE.Vector3().lerpVectors(zt.fromLook, zt.toLook, e);
+    camera.lookAt(lookAt);
+    if (t >= 1) {
+      const onComplete = zt.onComplete;
+      state.zoomTween = null;
+      if (onComplete) onComplete();
+    }
+  } else if (!state.zooming) {
+    const k = 1 - Math.exp(-CONFIG.followSpeed * delta);
+    state.currentNX += (state.targetNX - state.currentNX) * k;
+    state.currentNY += (state.targetNY - state.currentNY) * k;
 
-  rig.rotation.y = state.currentNX * CONFIG.maxYaw;
-  rig.rotation.x = THREE.MathUtils.degToRad(CONFIG.baseTiltDeg) + state.currentNY * CONFIG.maxPitch;
+    rig.rotation.y = state.currentNX * CONFIG.maxYaw;
+    rig.rotation.x = THREE.MathUtils.degToRad(CONFIG.baseTiltDeg) + state.currentNY * CONFIG.maxPitch;
 
-  const dolly = state.currentNY * CONFIG.maxDolly;
-  camera.position.set(state.camCenter.x, state.camCenter.y, state.camCenter.z + state.baseCamDistance - dolly);
-  camera.lookAt(state.camCenter.x, state.camLookY, state.camCenter.z);
+    const dolly = state.currentNY * CONFIG.maxDolly;
+    camera.position.set(state.camCenter.x, state.camCenter.y, state.camCenter.z + state.baseCamDistance - dolly);
+    camera.lookAt(state.camCenter.x, state.camLookY, state.camCenter.z);
+  }
 
   if (state.hingeTween) {
     const t = Math.min((state.elapsedTime - state.hingeTween.startTime) / state.hingeTween.duration, 1);

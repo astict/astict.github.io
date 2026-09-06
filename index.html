@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="css/rails.css">
   <link rel="stylesheet" href="css/dock.css">
   <link rel="stylesheet" href="css/corner-tools.css">
+  <link rel="stylesheet" href="css/project-page.css">
   <link rel="stylesheet" href="css/loader.css">
   <link rel="stylesheet" href="css/responsive.css">
 
@@ -79,7 +80,7 @@
     <div id="hint">Faites pivoter la scène au gré de vos mouvements de souris.</div>
 
     <div id="dock">
-      <button class="dockitem" data-cat="projets" data-fr="FOXY" data-en="FOXY" data-es="FOXY" data-sv="FOXY">
+      <button class="dockitem" data-cat="projets" data-project="foxy" data-fr="FOXY" data-en="FOXY" data-es="FOXY" data-sv="FOXY">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <rect x="2" y="6" width="20" height="12" rx="2"/>
           <path d="M6 12h4M8 10v4M15 11h.01M18 13h.01"/>
@@ -216,6 +217,46 @@
               <span class="flag-wrap"><img src="model/flag/se.svg" alt="Svenska" class="flag-icon"></span> Svenska
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- ——————————————————— PAGE PROJET : FOXY ———————————————————
+         S'ouvre après le zoom caméra dans l'écran (voir js/project-page.js).
+         Contenu ci-dessous en placeholder : à remplacer par le vrai texte/visuels du projet. -->
+    <div class="project-page" data-project="foxy" aria-hidden="true">
+      <button class="project-page__close" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <line x1="5" y1="5" x2="19" y2="19"/>
+          <line x1="19" y1="5" x2="5" y2="19"/>
+        </svg>
+      </button>
+
+      <div class="project-page__scroll">
+        <article class="project-page__content">
+          <header class="project-page__header">
+            <h1>Foxy</h1>
+            <p class="project-page__meta">Jeu vidéo — développement solo</p>
+          </header>
+
+          <p class="project-page__lead">
+            <!-- Placeholder : décris ici le projet Foxy en 2-3 phrases (contexte, objectif, ta contribution). -->
+            Foxy est un projet de jeu vidéo développé de façon indépendante, pensé comme un terrain
+            d'expérimentation pour explorer la logique de jeu, l'animation et l'intégration technique
+            d'un bout à l'autre.
+          </p>
+
+          <figure class="project-page__figure">
+            <div class="project-page__placeholder-visual">Visuel du projet — à remplacer</div>
+            <figcaption>Aperçu du jeu</figcaption>
+          </figure>
+
+          <h2>Approche</h2>
+          <p>
+            <!-- Placeholder : détaille ici les outils utilisés, les choix techniques, les difficultés rencontrées. -->
+            Le projet couvre la conception du gameplay, le développement du moteur de jeu et l'intégration
+            des assets visuels et sonores.
+          </p>
+        </article>
       </div>
     </div>
 

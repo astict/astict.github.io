@@ -8,7 +8,9 @@ import "./scene-setup.js";
 import { loadModels } from "./model-loader.js";
 import { animate } from "./interaction.js";
 import { initUI } from "./ui.js";
+import { initProjectPages } from "./project-page.js";
 
 loadModels();
 animate();
 initUI();
+initProjectPages();
