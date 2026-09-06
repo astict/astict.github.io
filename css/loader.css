@@ -20,8 +20,8 @@
 
 @font-face {
   font-family: 'Nexa';
-  src: url('../fonts/Nexa-Bold.woff2') format('woff2'), /* Remplace par ton chemin exact */
-       url('../fonts/Nexa-Bold.woff') format('woff');
+  src: url('../fonts/Nexa-Heavy.ttf') format('truetype'), /* Remplace par ton chemin exact */
+       url('../fonts/Nexa-ExtraLight.ttf') format('truetype');
   font-weight: 700; /* Pour le pourcentage (loader-pct) */
   font-style: normal;
 }
