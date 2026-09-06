@@ -12,8 +12,8 @@ import { easeInOutCubic } from "./model-loader.js";
    referme la page et ramène la caméra à son cadrage d'origine.
    ——————————————————————————————————————————————————————————— */
 
-const ZOOM_DURATION = 0.8;     // secondes, aligné sur pcLidAnimDuration pour rester cohérent
-const ZOOM_DISTANCE = 0.025;   // distance caméra ↔ dalle une fois "à l'intérieur" de l'écran
+const ZOOM_DURATION = 0.7;     // secondes, aligné sur pcLidAnimDuration pour rester cohérent
+const ZOOM_DISTANCE = 0.015;   // distance caméra ↔ dalle une fois "à l'intérieur" de l'écran
 
 const uiFadeTargets = document.querySelectorAll(
   "#header, #dock, #cornerTools, #clock, .rail, #hint"
@@ -48,6 +48,7 @@ function getPage(key) {
 export function openProjectPage(key) {
   const page = getPage(key);
   if (!page) return;
+  if (!state.pcOpen) return; // le laptop est fermé : les sous-catégories ne réagissent pas
   if (state.zooming || state.zoomTween) return; // une transition est déjà en cours
 
   const fallbackLook = new THREE.Vector3(state.camCenter.x, state.camLookY, state.camCenter.z);
