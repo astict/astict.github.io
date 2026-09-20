@@ -11,6 +11,7 @@ monPortfolio/
 │   ├── dock.css           dock de filtres en bas d'écran
 │   ├── corner-tools.css   sélecteur de langue, horloge, boutons ronds
 │   ├── loader.css         écran de chargement + indice "hint"
+│   ├── project-page.css
 │   └── responsive.css     media queries (reduced-motion, mobile)
 ├── js/
 │   ├── config.js          CONFIG (réglages du rig 3D) + détection reduced-motion
@@ -21,6 +22,7 @@ monPortfolio/
 │   ├── model-loader.js    chargement GLTF (PC + souris), charnière d'écran, clic
 │   ├── interaction.js     parallax souris/tactile, resize, boucle d'animation
 │   ├── ui.js              horloge, filtrage du dock, sélecteur de langue
+│   ├── project-page.js
 │   └── main.js            point d'entrée : importe et démarre le tout
 └── model/                 
     ├── 2D/                roueBateau.svg

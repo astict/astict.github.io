@@ -132,7 +132,7 @@ export function initUI() {
     fr: { role: "ÉTUDIANT", status: "🚧 SITE EN CONSTRUCTION" },
     en: { role: "STUDENT",   status: "🚧 WEBSITE UNDER CONSTRUCTION"  },
     es: { role: "ESTUDIANTE", status: "🚧 SITIO EN CONSTRUCCIÓN" },
-    sv: { role: "STUDENT", status: "🚧 WEBBPLATS UNDER UPPMYNANDE" }
+    sv: { role: "STUDENT", status: "🚧 WEBBPLATS UNDER UPPBYGGNAD" }
   };
 
   langBtn.addEventListener("click", (e) => {
@@ -156,6 +156,7 @@ export function initUI() {
   document.querySelectorAll("#langDropdown button").forEach(btn => {
     btn.addEventListener("click", () => {
       const selectedLang = btn.getAttribute("data-lang");
+      document.documentElement.lang = selectedLang;
 
       if (translations[selectedLang]) {
         roleLabel.textContent = translations[selectedLang].role;

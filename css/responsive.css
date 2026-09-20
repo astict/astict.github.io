@@ -9,10 +9,72 @@
   .navpill::before { animation: none; }
 }
 
-@media (max-width: 760px) {
+/* ---------- Tablet ---------- */
+@media (max-width: 1180px) {
+  .navitem { min-width: 96px; padding: 6px 16px; }
+  .loader-scene { width: clamp(360px, 60vw, 710px); height: clamp(360px, 60vw, 710px); }
+}
+
+/* ---------- Small tablet / large phone ---------- */
+@media (max-width: 880px) {
+  #header {
+    flex-wrap: wrap;
+    row-gap: 12px;
+    padding: 18px 20px;
+  }
+
+  .navwrap { order: 3; width: 100%; }
+
+  /* La navpill ne rentre plus en largeur fixe : on la laisse défiler
+     horizontalement plutôt que de casser la mise en page ou de tronquer
+     les libellés. */
+  .navpill {
+    width: 100%;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .navpill::-webkit-scrollbar { display: none; }
+
   .navwrap .navitem .num { display: none; }
-  #dock                  { gap: 6px; }
-  .dockitem              { padding: 7px 10px; font-size: 9.5px; }
-  .dockitem svg          { display: none; }
-  .rail                  { display: none; }
+  .navitem { min-width: max-content; white-space: nowrap; padding: 6px 16px; }
+
+  .statuspill { font-size: 10px; padding: 7px 12px; }
+
+  #dock { gap: 6px; bottom: 18px; }
+  .dockitem { padding: 7px 10px; font-size: 9.5px; }
+  .dockitem svg { display: none; }
+  .rail { display: none; }
+
+  #hint { bottom: 96px; font-size: 10px; padding: 0 20px; text-align: center; }
+
+  .loader-scene { width: clamp(260px, 62vw, 500px); height: clamp(260px, 62vw, 500px); }
+
+  #clock { bottom: 18px; left: 18px; font-size: 10px; }
+  #cornerTools { bottom: 16px; right: 18px; }
+}
+
+/* ---------- Phone ---------- */
+@media (max-width: 480px) {
+  .brand .name { font-size: 12px; }
+  .brand .role { font-size: 10px; }
+
+  .statuspill span:first-child { display: none; }
+  .statuspill { padding: 8px; }
+
+  #dock { max-width: 94vw; bottom: 16px; }
+  .dockitem .lbl { max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  #hint { bottom: 88px; }
+
+  #clock { display: none; }
+}
+
+/* ---------- Écrans bas (mobile paysage) : le rig + l'UI doivent tenir
+   sans déborder même quand la hauteur de viewport est réduite ---------- */
+@media (max-height: 480px) {
+  .loader-scene { width: clamp(200px, 42vh, 500px); height: clamp(200px, 42vh, 500px); }
+  #hint { display: none; }
+  #dock { bottom: 10px; }
+  #header { padding: 12px 20px; }
 }

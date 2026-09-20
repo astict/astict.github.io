@@ -97,8 +97,8 @@ export function animate() {
 
   // FIX: raycaster pour le curseur uniquement si la souris a bougé depuis la dernière frame
   if (state.pcGroup && state.pointerDirty) {
-    ndc.x = (state.lastPointerX / window.innerWidth) * 2 - 1;
-    ndc.y = -((state.lastPointerY / window.innerHeight) * 2 - 1);
+    ndc.x = (state.lastPointerX / app.clientWidth) * 2 - 1;
+    ndc.y = -((state.lastPointerY / app.clientHeight) * 2 - 1);
     raycaster.setFromCamera(ndc, camera);
     const hovering = raycaster.intersectObject(state.pcGroup, true).length > 0;
     document.body.style.cursor = hovering ? "pointer" : "default";

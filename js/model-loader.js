@@ -3,7 +3,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { CONFIG } from "./config.js";
 import { state } from "./state.js";
-import { camera, renderer, rig } from "./scene-setup.js";
+import { camera, renderer, rig, app } from "./scene-setup.js";
 import { processMaterial, setupScreenMaterial } from "./materials.js";
 import { fitObject, frameRig } from "./framing.js";
 
@@ -50,8 +50,8 @@ export function togglePc() {
 
 function onSceneClick(clientX, clientY) {
   if (!state.pcGroup) return;
-  ndc.x = (clientX / window.innerWidth) * 2 - 1;
-  ndc.y = -((clientY / window.innerHeight) * 2 - 1);
+  ndc.x = (clientX / app.clientWidth) * 2 - 1;
+  ndc.y = -((clientY / app.clientHeight) * 2 - 1);
   raycaster.setFromCamera(ndc, camera);
   const hits = raycaster.intersectObject(state.pcGroup, true);
   if (hits.length > 0) togglePc();
