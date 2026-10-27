@@ -4,6 +4,9 @@
 monPortfolio/
 
 ├── index.html
+├── fonts/
+│   ├── Nexa-ExtraLight.ttf          
+│   ├── Nexa-Heavy.ttf
 ├── css/
 │   ├── base.css           variables, reset, fond, canvas, .dot/.pulse
 │   ├── header.css         en-tête + navbar animée (navpill, navitem…)
@@ -25,7 +28,7 @@ monPortfolio/
 │   ├── project-page.js
 │   └── main.js            point d'entrée : importe et démarre le tout
 └── model/                 
-    ├── 2D/                roueBateau.svg
+    ├── 2D/                roueBateau.svg, MAIN_p.png, FOXY_p.png, BOAT_favicon.png
     ├── 3D/                AppleLogo.png, myMouseTECKNET.bin, myMouseTECKNET.gltf, thePC.bin, thePC.gltf, Top.png
     ├── flag/              es.svg, fr.webp, gb.svg, se.svg
     ├── mp4/               Fish.webm    
