@@ -12,8 +12,8 @@ import { easeInOutCubic } from "./model-loader.js";
    referme la page et ramène la caméra à son cadrage d'origine.
    ——————————————————————————————————————————————————————————— */
 
-const ZOOM_DURATION = 0.7;     // secondes, aligné sur pcLidAnimDuration pour rester cohérent
-const ZOOM_DISTANCE = 0.015;   // distance caméra ↔ dalle une fois "à l'intérieur" de l'écran
+const ZOOM_DURATION = 0.6;     // secondes, aligné sur pcLidAnimDuration pour rester cohérent
+const ZOOM_DISTANCE = 0.075;   // distance caméra ↔ dalle une fois "à l'intérieur" de l'écran
 
 const uiFadeTargets = document.querySelectorAll(
   "#header, #dock, #cornerTools, #clock, .rail, #hint"
