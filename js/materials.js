@@ -67,9 +67,9 @@ function loadWallpaperTexture(path) {
 }
 
 // Fond d'écran par défaut (affiché au chargement + quand la souris quitte "FOXY")
-export const defaultWallpaper = loadWallpaperTexture("model/2D/Wallpaper_-_spes_-_home.png");
+export const defaultWallpaper = loadWallpaperTexture("model/2D/MAIN_p.png");
 // Fond d'écran affiché au survol du bouton "FOXY"
-export const gameWallpaper = loadWallpaperTexture("model/2D/FOXY.png");
+export const gameWallpaper = loadWallpaperTexture("model/2D/FOXY_p.png");
 
 // Référence(s) vers le matériau dédié de la dalle (clone, voir setupScreenMaterial),
 // pour pouvoir changer l'image affichée à la volée (survol dock).

@@ -13,7 +13,7 @@ import { easeInOutCubic } from "./model-loader.js";
    ——————————————————————————————————————————————————————————— */
 
 const ZOOM_DURATION = 0.6;     // secondes, aligné sur pcLidAnimDuration pour rester cohérent
-const ZOOM_DISTANCE = 0.075;   // distance caméra ↔ dalle une fois "à l'intérieur" de l'écran
+const ZOOM_DISTANCE = 0.065;   // distance caméra ↔ dalle une fois "à l'intérieur" de l'écran
 
 const uiFadeTargets = document.querySelectorAll(
   "#header, #dock, #cornerTools, #clock, .rail, #hint"
