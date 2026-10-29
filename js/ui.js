@@ -1,5 +1,5 @@
 /* ——————————————————— UI & COMPOSANTS INTERACTIFS DOM ——————————————————— */
-import { setScreenWallpaper, defaultWallpaper, gameWallpaper } from "./materials.js";
+import { setScreenWallpaper, defaultWallpaper, gameWallpaper, carWallpaper } from "./materials.js";
 
 /**
  * Initialise l'horloge, le filtrage du dock et le sélecteur de langue.
@@ -92,7 +92,7 @@ export function initUI() {
   // d'écran dédié. Au clic, ce fond reste "épinglé" tant que l'utilisateur ne
   // survole pas un autre item du dock — à ce moment-là seulement l'épingle
   // saute, et l'écran redevient un simple aperçu au survol (comportement normal).
-  const wallpaperByProject = { foxy: gameWallpaper };
+  const wallpaperByProject = { foxy: gameWallpaper, car: carWallpaper };
   let pinnedKey = null;
 
   function wallpaperFor(key) {

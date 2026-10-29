@@ -70,6 +70,8 @@ function loadWallpaperTexture(path) {
 export const defaultWallpaper = loadWallpaperTexture("model/2D/MAIN_p.png");
 // Fond d'écran affiché au survol du bouton "FOXY"
 export const gameWallpaper = loadWallpaperTexture("model/2D/FOXY_p.png");
+// Fond d'écran affiché au survol du bouton "CAR"
+export const carWallpaper = loadWallpaperTexture("model/2D/CAR_p.png");
 
 // Référence(s) vers le matériau dédié de la dalle (clone, voir setupScreenMaterial),
 // pour pouvoir changer l'image affichée à la volée (survol dock).

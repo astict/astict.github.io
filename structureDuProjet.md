@@ -28,7 +28,7 @@ monPortfolio/
 │   ├── project-page.js
 │   └── main.js            point d'entrée : importe et démarre le tout
 └── model/                 
-    ├── 2D/                roueBateau.svg, MAIN_p.png, FOXY_p.png, BOAT_favicon.png
+    ├── 2D/                roueBateau.svg, MAIN_p.png, FOXY_p.png, CAR_p.png, BOAT_favicon.png
     ├── 3D/                AppleLogo.png, myMouseTECKNET.bin, myMouseTECKNET.gltf, thePC.bin, thePC.gltf, Top.png
     ├── flag/              es.svg, fr.webp, gb.svg, se.svg
     ├── mp4/               Fish.webm    
